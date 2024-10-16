@@ -9,4 +9,14 @@ import { Component } from '@angular/core';
 })
 export class HomeComponent {
 
+  buttonSrc: string = 'button.png';
+
+  onHoverButton() {
+    this.buttonSrc = 'button_hover.png';
+  }
+
+  onLeaveButton() {
+    this.buttonSrc = 'button.png';
+  }
+
 }

@@ -1,3 +1,26 @@
 <body>
-    <p>home works!</p>
+    <div class="container">
+        <!-- Seção esquerda com logo e texto -->
+        <div class="left-section">
+            <div class="logo">
+                <img src="DASH_logo.png" alt="Logo DASH">
+                <h1 class="title">DASH</h1>
+            </div>
+            <h2 class="slogan">Construa seus prontuários de forma inteligente e eficaz</h2>
+            <p class="description">Utilize inteligência artificial para melhorar seus diagnósticos</p>
+        </div>
+        
+        <!-- Seção direita com imagem e botão -->
+        <div class="right-section">
+            <img src="main_image.png" alt="Imagem ilustrativa" class="main-image">
+            <a href="nextpage.html">
+                <img 
+                    [src]="buttonSrc" 
+                    alt="Botão" 
+                    class="button" 
+                    (mouseenter)="onHoverButton()"
+                    (mouseleave)="onLeaveButton()">
+            </a>
+        </div>
+    </div>
 </body>
