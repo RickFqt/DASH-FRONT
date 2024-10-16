@@ -12,15 +12,17 @@
         
         <!-- Seção direita com imagem e botão -->
         <div class="right-section">
+            <div class="right">
             <img src="main_image.png" alt="Imagem ilustrativa" class="main-image">
-            <a href="nextpage.html">
-                <img 
-                    [src]="buttonSrc" 
-                    alt="Botão" 
-                    class="button" 
-                    (mouseenter)="onHoverButton()"
-                    (mouseleave)="onLeaveButton()">
-            </a>
+                <a href="nextpage.html">
+                    <img 
+                        [src]="buttonSrc" 
+                        alt="Botão" 
+                        class="button" 
+                        (mouseenter)="onHoverButton()"
+                        (mouseleave)="onLeaveButton()">
+                </a>
+            </div>
         </div>
     </div>
 </body>
