@@ -1,0 +1,40 @@
+.section {
+    /* margin-left: 42px; */
+    /* margin-right: 21px; */
+    margin-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .section:last-child {
+    padding-bottom: 0px;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .section-title {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .section-content {
+    margin-top: 10px;
+    /* margin-left: 20px; Recuo para subseções */
+  }
+  
+  .toggle-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .toggle-button:hover {
+    background-color: #2980b9;
+  }
+  

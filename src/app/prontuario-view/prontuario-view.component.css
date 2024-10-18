@@ -1,8 +1,14 @@
+* {
+  color: #4D6F80;
+}
+
 /* Container principal */
 .container {
   background-color: #EBF2F5;
   display: flex;
   min-height: 100vh; /* Garante que a altura mínima seja a da tela */
+  font-family: 'Nunito', sans-serif;
+  color: #4D6F80;
 }
 
 /* Bloco 1: Lateral fixa */
@@ -51,4 +57,84 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
   flex-grow: 1; /* Ocupa o restante da largura da tela */
   border: 0.5px solid #D3E2E5;
+}
+
+/* Título */
+.title {
+  margin-left: 42px;
+  margin-top: 63px;
+  font-size: 50px;
+  font-weight: 800;
+}
+
+/* Descrição */
+.description {
+  margin-left: 42px;
+  margin-top: 34px;
+  font-size: 25px;
+  color: #666;
+}
+
+/* Separador das seções */
+.section-separator {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background-color: #D3E2E5;
+}
+
+/* Cabeçalho da Seção */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 42px;
+  margin-right: 21px;
+}
+
+/* Título da Seção */
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Botão de Mostrar/Esconder Seção */
+.toggle-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-button:hover {
+  background-color: #2980b9;
+}
+
+/* Conteúdo da Seção */
+.section-content {
+  margin-left: 42px;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Separador das Subseções */
+.subsection-separator {
+  margin: 10px 0;
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+}
+
+/* Título da Subseção */
+.subsection-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sections {
+  margin-left: 42px;
+  margin-right: 42px;
 }

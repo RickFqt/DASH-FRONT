@@ -14,8 +14,20 @@
 
 	<!-- Bloco 2: Principal com as informações do formulário -->
 	<div class="main-content">
-		<!-- Aqui vai o conteúdo do formulário -->
-		<p>Informações do prontuário...</p>
-	</div>
+    <!-- Título -->
+    <h1 class="title">{{ prontuario.title }}</h1>
+    
+    <!-- Descrição -->
+    <p class="description">{{ prontuario.description }}</p>
+
+    <hr class="section-separator">
+    
+    <!-- Seções -->
+    <div class="sections" *ngFor="let section of prontuario.sections; let i = index">
+      <app-section [section]="section" [sectionIndex]="(i + 1).toString()"></app-section>
+      <hr class="section-separator">
+    </div>
+  </div>
+
 </div>
   

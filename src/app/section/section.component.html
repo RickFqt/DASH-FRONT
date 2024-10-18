@@ -1,0 +1,22 @@
+<div class="section">
+    <div class="section-header">
+      <h2 class="section-title">{{ sectionIndex }}. {{ section.title }}</h2>
+      <button class="toggle-button" (click)="toggleSection()">
+        {{ section.isVisible ? 'Esconder' : 'Mostrar' }}
+      </button>
+    </div>
+  
+    <!-- Conteúdo da Seção/Subseção -->
+    <div *ngIf="section.isVisible" class="section-content">
+      <p>{{ section.content }}</p>
+  
+      <!-- Subseções (Chamando o mesmo componente para subseções) -->
+      <div *ngFor="let subsection of section.subsections; let subIndex = index">
+        <app-section
+          [section]="subsection"
+          [sectionIndex]="sectionIndex + '.' + (subIndex + 1)"
+        ></app-section>
+      </div>
+    </div>
+  </div>
+  
