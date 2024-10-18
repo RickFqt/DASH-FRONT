@@ -1,1 +1,21 @@
-<p>prontuario-view works!</p>
+<div class="container">
+	<!-- Bloco 1: Lateral fixa com logo e botão -->
+	<div class="sidebar">
+		<img src="DASH_logo.png" alt="Logo" class="logo">
+		<a [routerLink]="['/home']">
+      <img class="back-button"
+        [src]="buttonSrc" 
+        alt="Botão" 
+        class="button" 
+        (mouseenter)="onHoverButton()"
+        (mouseleave)="onLeaveButton()">
+    </a>
+	</div>
+
+	<!-- Bloco 2: Principal com as informações do formulário -->
+	<div class="main-content">
+		<!-- Aqui vai o conteúdo do formulário -->
+		<p>Informações do prontuário...</p>
+	</div>
+</div>
+  

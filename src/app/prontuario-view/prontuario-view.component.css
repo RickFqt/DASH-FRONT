@@ -1,0 +1,54 @@
+/* Container principal */
+.container {
+  background-color: #EBF2F5;
+  display: flex;
+  min-height: 100vh; /* Garante que a altura mínima seja a da tela */
+}
+
+/* Bloco 1: Lateral fixa */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Sempre terá a altura da tela */
+  width: 6.7vw; /* 6.7% da largura da tela */
+  min-width: 96px; /* Largura mínima de 96px */
+  background-color: #85CEC3; /* Cor de fundo do bloco lateral */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Espaço entre logo e botão */
+  align-items: center;
+  padding: 20px 0; /* Espaçamento interno */
+}
+
+.logo {
+  max-width: 80%; /* Logo se ajusta ao tamanho da sidebar */
+}
+
+.back-button {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  /* background-color: #3498db; */
+  /* color: white; */
+  /* border: none; */
+  /* border-radius: 5px; */
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #2980b9; /* Cor ao passar o mouse */
+}
+
+/* Bloco 2: Principal */
+.main-content {
+  margin-left: calc(max(6.7vw, 96px) + 21px); /* Distância de 21px do bloco lateral */
+  margin-right: 21px; /* Margem de 21px da direita */
+  margin-top: 11px;
+  margin-bottom: 11px;
+  background-color: white;
+  border-radius: 15px; /* Pontas arredondadas */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  flex-grow: 1; /* Ocupa o restante da largura da tela */
+  border: 0.5px solid #D3E2E5;
+}
