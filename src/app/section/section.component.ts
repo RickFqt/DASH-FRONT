@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { QuesitoComponent } from "../quesito/quesito.component";
 
 @Component({
   selector: 'app-section',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, QuesitoComponent],
   templateUrl: './section.component.html',
   styleUrl: './section.component.css'
 })

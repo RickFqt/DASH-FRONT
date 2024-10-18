@@ -19,23 +19,57 @@ export class ProntuarioViewComponent {
     sections: [
       {
         title: 'Primeira Seção',
-        content: 'Conteúdo da primeira seção.',
+        // content: 'Conteúdo da primeira seção.',
+        quesitos: [
+          {
+            enunciado: 'Quesito 1',
+            tipoResposta: 'DISSERTATIVA_CURTA',
+            opcoes: [],
+            subquesitos: []
+          },
+          {
+            enunciado: 'Quesito 2',
+            tipoResposta: 'DISSERTATIVA_LONGA',
+            opcoes: [],
+            subquesitos: []
+          }
+        ],
         isVisible: true,
         subsections: [
           {
             title: 'Subseção 1.1',
-            content: 'Conteúdo da subseção 1.1',
+            quesitos: [
+              {
+                enunciado: 'Quesito 1.1',
+                tipoResposta: 'OBJETIVA_SIMPLES',
+                opcoes: ['Opção 1', 'Opção 2', 'Opção 3'],
+                subquesitos: []
+              },
+              {
+                enunciado: 'Quesito 1.2',
+                tipoResposta: 'OBJETIVA_MULTIPLA',
+                opcoes: ['Opção 1', 'Opção 2', 'Opção 3'],
+                subquesitos: []
+              }
+            ],
             isVisible: true,
             subsections: [
               {
                 title: 'Subseção 1.1.1',
-                content: 'Conteúdo da subseção 1.1.1',
+                quesitos: [
+                  {
+                    enunciado: 'Quesito 1.1.1',
+                    tipoResposta: 'DISSERTATIVA_CURTA',
+                    opcoes: [],
+                    subquesitos: []
+                  }
+                ],
                 isVisible: true,
                 subsections: []
               }
             ]
           },
-          { title: 'Subseção 1.2', content: 'Conteúdo da subseção 1.2', isVisible: true, subsections: [] }
+          { title: 'Subseção 1.2', quesitos: [], isVisible: true, subsections: [] }
         ]
       },
       {

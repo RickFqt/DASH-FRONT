@@ -4,6 +4,7 @@
 		<img src="DASH_logo.png" alt="Logo" class="logo">
 		<a [routerLink]="['/home']">
       <img class="back-button"
+        [ngClass]="{ 'flipped': true }"
         [src]="buttonSrc" 
         alt="Botão" 
         class="button" 

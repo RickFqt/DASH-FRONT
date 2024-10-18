@@ -1,14 +1,23 @@
 <div class="section">
-    <div class="section-header">
+    <div class="section-header" (click)="toggleSection()">
       <h2 class="section-title">{{ sectionIndex }}. {{ section.title }}</h2>
-      <button class="toggle-button" (click)="toggleSection()">
+      <!-- <button class="toggle-button" (click)="toggleSection()">
         {{ section.isVisible ? 'Esconder' : 'Mostrar' }}
-      </button>
+      </button> -->
+      <img
+        class="toggle-button"
+        src="section_button.png"
+        alt="Mostrar/Esconder"
+        [ngClass]="{ 'flipped': section.isVisible }"
+      />
+
     </div>
   
     <!-- Conteúdo da Seção/Subseção -->
     <div *ngIf="section.isVisible" class="section-content">
-      <p>{{ section.content }}</p>
+      <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
+        <app-quesito [quesito]="quesito" [quesitoIndex]="(i + 1).toString()"></app-quesito>
+      </div>
   
       <!-- Subseções (Chamando o mesmo componente para subseções) -->
       <div *ngFor="let subsection of section.subsections; let subIndex = index">

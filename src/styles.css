@@ -19,3 +19,7 @@
     color: white;
     border-radius: 8px;
   }
+
+  .flipped {
+    transform: rotate(180deg);
+  }
