@@ -1,1 +1,38 @@
-<p>prontuario-view works!</p>
+<div class="container">
+	<!-- Bloco 1: Lateral fixa com logo e botão -->
+	<div class="sidebar">
+		<img src="DASH_logo.png" alt="Logo" class="logo">
+		<a [routerLink]="['/home']">
+      <img class="back-button"
+        [ngClass]="{ 'flipped': true }"
+        [src]="buttonSrc" 
+        alt="Botão" 
+        class="button" 
+        (mouseenter)="onHoverButton()"
+        (mouseleave)="onLeaveButton()">
+    </a>
+	</div>
+
+	<!-- Bloco 2: Principal com as informações do formulário -->
+	<div class="main-content">
+    <!-- Título -->
+    <h1 class="title">{{ prontuario.nome }}</h1>
+    
+    <!-- Descrição -->
+    <p class="description">{{ prontuario.descricao }}</p>
+
+    <hr class="section-separator">
+    
+    <!-- Seções -->
+    <div class="sections" *ngFor="let section of prontuario.secoes; let i = index">
+      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-section>
+      <hr class="section-separator">
+    </div>
+
+    <!-- Debug button -->
+    <!-- <div class="action-buttons">
+      <button (click)="changeProntuarioState()" class="btn btn-primary">Change State</button>
+    </div> -->
+
+</div>
+  
