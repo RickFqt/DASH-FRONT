@@ -118,4 +118,8 @@ export class ProntuarioViewComponent {
   onLeaveButton() {
     this.buttonSrc = 'button.png';
   }
+
+  changeProntuarioState() {
+    this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
+  }
 }

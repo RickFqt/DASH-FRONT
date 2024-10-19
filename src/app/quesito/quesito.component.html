@@ -37,30 +37,29 @@
 
   <div *ngIf="estadoProntuario === 'visualizacao'" class="answer">
     <!-- Resposta dissertativa curta -->
-    <input *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'"
-            class="short-answer" 
-            type="text" 
-            placeholder="Escreva sua resposta">
+    <div *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'" class="resposta dissertativa-curta">
+      {{ resposta.conteudo[0] || '' }}
+    </div>
 
     <!-- Resposta dissertativa longa -->
-    <textarea *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'"
-              class="long-answer"
-              placeholder="Escreva sua resposta"></textarea>
+    <div *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'" class="resposta dissertativa-longa">
+      {{ resposta.conteudo[0] || '' }}
+    </div>
 
     <!-- Objetiva simples -->
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">
-      <div *ngFor="let opcao of quesito.opcoes" class="choice">
-        <input type="radio" [name]="'choice' + quesitoIndex" [value]="opcao">
-        <span>{{ opcao }}</span>
-      </div>
+      <span *ngFor="let option of quesito.opcoes">
+        <input type="radio" [checked]="resposta.opcoesMarcadasIds.includes(option.id)" disabled>
+        {{ option.texto }}
+      </span>
     </div>
 
     <!-- Objetiva múltipla -->
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'" class="choices-container">
-      <div *ngFor="let opcao of quesito.opcoes" class="choice">
-        <input type="checkbox" [value]="opcao">
-        <span>{{ opcao }}</span>
-      </div>
+      <span *ngFor="let option of quesito.opcoes">
+        <input type="checkbox" [checked]="resposta.opcoesMarcadasIds.includes(option.id)" disabled>
+        {{ option.texto }}
+      </span>
     </div>
   </div>
 

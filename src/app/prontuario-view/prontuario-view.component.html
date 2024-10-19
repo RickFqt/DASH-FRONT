@@ -25,10 +25,14 @@
     
     <!-- Seções -->
     <div class="sections" *ngFor="let section of prontuario.secoes; let i = index">
-      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="'visualizacao'"></app-section>
+      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-section>
       <hr class="section-separator">
     </div>
-  </div>
+
+    <!-- Debug button -->
+    <!-- <div class="action-buttons">
+      <button (click)="changeProntuarioState()" class="btn btn-primary">Change State</button>
+    </div> -->
 
 </div>
   

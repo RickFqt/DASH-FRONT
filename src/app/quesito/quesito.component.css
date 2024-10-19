@@ -48,3 +48,20 @@
 .choice input {
   margin-right: 10px;
 }
+
+.resposta {
+  border-radius: 5px;
+  background-color: #F5F8FA;
+  border: 1px solid #D3E2E5;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.dissertativa-curta {
+  width: 460px; /* Tamanho da resposta dissertativa curta */
+}
+
+.dissertativa-longa {
+  width: 100%; /* Tamanho maior para resposta longa */
+  min-height: 100px;
+}
