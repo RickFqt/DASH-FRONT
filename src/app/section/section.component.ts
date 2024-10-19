@@ -12,8 +12,10 @@ import { QuesitoComponent } from "../quesito/quesito.component";
 export class SectionComponent {
   @Input() section: any;
   @Input() sectionIndex: string = ''; // Para numerar as seções e subseções
+  @Input() estadoProntuario: string = '';
+  isVisible: boolean = true;
 
   toggleSection() {
-    this.section.isVisible = !this.section.isVisible;
+    this.isVisible = !this.isVisible;
   }
 }

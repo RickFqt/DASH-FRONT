@@ -11,5 +11,6 @@ import { Component, Input } from '@angular/core';
 export class QuesitoComponent {
   @Input() quesito: any;
   @Input() quesitoIndex: string = '';
+  @Input() estadoProntuario: string = '';
 
 }

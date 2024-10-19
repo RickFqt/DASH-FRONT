@@ -30,7 +30,7 @@
   }
   
   .toggle-button {
-    background-color: #3498db;
+    /* background-color: #3498db; */
     color: white;
     border: none;
     padding: 5px 10px;
@@ -39,5 +39,5 @@
   }
   
   .toggle-button:hover {
-    background-color: #2980b9;
+    background-color: #cfdbe0;
   }

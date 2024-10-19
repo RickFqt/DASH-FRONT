@@ -12,6 +12,7 @@ import { SectionComponent } from '../section/section.component';
 })
 export class ProntuarioViewComponent {
   buttonSrc: string = 'button.png';
+  estadoProntuario: string = 'visualizacao';
 
   prontuario = {
     title: 'Título do Prontuário',
@@ -34,7 +35,6 @@ export class ProntuarioViewComponent {
             subquesitos: []
           }
         ],
-        isVisible: true,
         subsections: [
           {
             title: 'Subseção 1.1',
@@ -52,7 +52,6 @@ export class ProntuarioViewComponent {
                 subquesitos: []
               }
             ],
-            isVisible: true,
             subsections: [
               {
                 title: 'Subseção 1.1.1',
@@ -64,18 +63,16 @@ export class ProntuarioViewComponent {
                     subquesitos: []
                   }
                 ],
-                isVisible: true,
                 subsections: []
               }
             ]
           },
-          { title: 'Subseção 1.2', quesitos: [], isVisible: true, subsections: [] }
+          { title: 'Subseção 1.2', quesitos: [], subsections: [] }
         ]
       },
       {
         title: 'Segunda Seção',
         content: 'Conteúdo da segunda seção.',
-        isVisible: true,
         subsections: []
       }
     ]
@@ -87,10 +84,5 @@ export class ProntuarioViewComponent {
 
   onLeaveButton() {
     this.buttonSrc = 'button.png';
-  }
-
-  // Método para alternar a visibilidade das seções
-  toggleSection(index: number) {
-    this.prontuario.sections[index].isVisible = !this.prontuario.sections[index].isVisible;
   }
 }

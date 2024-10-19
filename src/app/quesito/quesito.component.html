@@ -6,7 +6,36 @@
   </div>
 
   <!-- Campo de Resposta -->
-  <div class="answer">
+  <div *ngIf="estadoProntuario === 'respondendo'" class="answer">
+    <!-- Resposta dissertativa curta -->
+    <input *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'"
+            class="short-answer" 
+            type="text" 
+            placeholder="Escreva sua resposta">
+
+    <!-- Resposta dissertativa longa -->
+    <textarea *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'"
+              class="long-answer"
+              placeholder="Escreva sua resposta"></textarea>
+
+    <!-- Objetiva simples -->
+    <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">
+      <div *ngFor="let opcao of quesito.opcoes" class="choice">
+        <input type="radio" [name]="'choice' + quesitoIndex" [value]="opcao">
+        <span>{{ opcao }}</span>
+      </div>
+    </div>
+
+    <!-- Objetiva múltipla -->
+    <div *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'" class="choices-container">
+      <div *ngFor="let opcao of quesito.opcoes" class="choice">
+        <input type="checkbox" [value]="opcao">
+        <span>{{ opcao }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="estadoProntuario === 'visualizacao'" class="answer">
     <!-- Resposta dissertativa curta -->
     <input *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'"
             class="short-answer" 

@@ -25,7 +25,7 @@
     
     <!-- Seções -->
     <div class="sections" *ngFor="let section of prontuario.sections; let i = index">
-      <app-section [section]="section" [sectionIndex]="(i + 1).toString()"></app-section>
+      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="'visualizacao'"></app-section>
       <hr class="section-separator">
     </div>
   </div>
