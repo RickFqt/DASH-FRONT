@@ -65,9 +65,10 @@
   </div>
 
   <!-- Subquesitos (recursivo) -->
-  <div *ngIf="quesito.subquesitos" class="subquesitos">
-    <app-quesito *ngFor="let subquesito of quesito.subquesitos; let i = index"
+  <div *ngIf="quesito.subQuesitos" class="subquesitos">
+    <app-quesito *ngFor="let subquesito of quesito.subQuesitos; let i = index"
                   [quesito]="subquesito"
+                  [estadoProntuario]="estadoProntuario"
                   [quesitoIndex]="quesitoIndex + '.' + (i + 1)"></app-quesito>
   </div>
 </div>

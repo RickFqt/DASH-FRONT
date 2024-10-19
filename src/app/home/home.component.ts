@@ -19,7 +19,7 @@ export class HomeComponent {
 
   constructor() {
 
-    this.prontuarioService.getAllProntuarios().subscribe((prontuarioList: Prontuario[]) => {
+    this.prontuarioService.getAll().subscribe((prontuarioList: Prontuario[]) => {
       this.prontuarioList = prontuarioList;
       this.filteredProntuarioList = prontuarioList;
     });

@@ -14,11 +14,11 @@ export class ProntuarioService {
   constructor(private http: HttpClient) { }
 
 
-  getAllProntuarios(): Observable<Prontuario[]> {
+  getAll(): Observable<Prontuario[]> {
     return this.http.get<Prontuario[]>(`/api/prontuario`);
   }
 
-  getProntuarioById(id: number): Observable<Prontuario> {
+  getById(id: number): Observable<Prontuario> {
     return this.http.get<Prontuario>(`/api/prontuario/${id}`);
   }
 

@@ -16,15 +16,15 @@
 	<!-- Bloco 2: Principal com as informações do formulário -->
 	<div class="main-content">
     <!-- Título -->
-    <h1 class="title">{{ prontuario.title }}</h1>
+    <h1 class="title">{{ prontuario.nome }}</h1>
     
     <!-- Descrição -->
-    <p class="description">{{ prontuario.description }}</p>
+    <p class="description">{{ prontuario.descricao }}</p>
 
     <hr class="section-separator">
     
     <!-- Seções -->
-    <div class="sections" *ngFor="let section of prontuario.sections; let i = index">
+    <div class="sections" *ngFor="let section of prontuario.secoes; let i = index">
       <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="'visualizacao'"></app-section>
       <hr class="section-separator">
     </div>

@@ -1,6 +1,6 @@
 <div class="section">
     <div class="section-header" (click)="toggleSection()">
-      <h2 class="section-title">{{ sectionIndex }}. {{ section.title }}</h2>
+      <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2>
       <!-- <button class="toggle-button" (click)="toggleSection()">
         {{ isVisible ? 'Esconder' : 'Mostrar' }}
       </button> -->
@@ -20,10 +20,11 @@
       </div>
   
       <!-- Subseções (Chamando o mesmo componente para subseções) -->
-      <div *ngFor="let subsection of section.subsections; let subIndex = index">
+      <div *ngFor="let subsection of section.subSecoes; let subIndex = index">
         <app-section
           [section]="subsection"
           [sectionIndex]="sectionIndex + '.' + (subIndex + 1)"
+          [estadoProntuario]="estadoProntuario"
         ></app-section>
       </div>
     </div>

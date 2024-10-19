@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { QuesitoComponent } from "../quesito/quesito.component";
+import { SecaoData } from '../secao';
 
 @Component({
   selector: 'app-section',
@@ -10,7 +11,7 @@ import { QuesitoComponent } from "../quesito/quesito.component";
   styleUrl: './section.component.css'
 })
 export class SectionComponent {
-  @Input() section: any;
+  @Input() section: SecaoData = new SecaoData();
   @Input() sectionIndex: string = ''; // Para numerar as seções e subseções
   @Input() estadoProntuario: string = '';
   isVisible: boolean = true;
