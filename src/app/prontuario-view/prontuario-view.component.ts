@@ -119,6 +119,7 @@ export class ProntuarioViewComponent {
     this.buttonSrc = 'button.png';
   }
 
+  // DEBUG ONLY FUNCTION; REMOVE LATER
   changeProntuarioState() {
     this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
   }

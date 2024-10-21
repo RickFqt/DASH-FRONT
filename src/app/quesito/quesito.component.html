@@ -22,7 +22,7 @@
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">
       <div *ngFor="let opcao of quesito.opcoes" class="choice">
         <input type="radio" [name]="'choice' + quesitoIndex" [value]="opcao">
-        <span>{{ opcao }}</span>
+        <span>{{ opcao.textoAlternativa }}</span>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'" class="choices-container">
       <div *ngFor="let opcao of quesito.opcoes" class="choice">
         <input type="checkbox" [value]="opcao">
-        <span>{{ opcao }}</span>
+        <span>{{ opcao.textoAlternativa }}</span>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">
       <span *ngFor="let option of quesito.opcoes">
         <input type="radio" [checked]="resposta.opcoesMarcadasIds.includes(option.id)" disabled>
-        {{ option.texto }}
+        {{ option.textoAlternativa }}
       </span>
     </div>
 
@@ -58,7 +58,7 @@
     <div *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'" class="choices-container">
       <span *ngFor="let option of quesito.opcoes">
         <input type="checkbox" [checked]="resposta.opcoesMarcadasIds.includes(option.id)" disabled>
-        {{ option.texto }}
+        {{ option.textoAlternativa }}
       </span>
     </div>
   </div>

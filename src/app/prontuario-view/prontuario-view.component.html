@@ -6,8 +6,7 @@
       <img class="back-button"
         [ngClass]="{ 'flipped': true }"
         [src]="buttonSrc" 
-        alt="Botão" 
-        class="button" 
+        alt="Botão"
         (mouseenter)="onHoverButton()"
         (mouseleave)="onLeaveButton()">
     </a>
@@ -15,8 +14,15 @@
 
 	<!-- Bloco 2: Principal com as informações do formulário -->
 	<div class="main-content">
+
+    <div class="header">
+      <h1 class="title">{{ prontuario.nome }}</h1>
+      <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-button">
+      <!-- <button class="top-right-button">Clique aqui</button> -->
+    </div>
+    <!-- <div class="header">
+    </div> -->
     <!-- Título -->
-    <h1 class="title">{{ prontuario.nome }}</h1>
     
     <!-- Descrição -->
     <p class="description">{{ prontuario.descricao }}</p>
@@ -30,9 +36,9 @@
     </div>
 
     <!-- Debug button -->
-    <!-- <div class="action-buttons">
+    <div class="action-buttons">
       <button (click)="changeProntuarioState()" class="btn btn-primary">Change State</button>
-    </div> -->
+    </div>
 
 </div>
   
