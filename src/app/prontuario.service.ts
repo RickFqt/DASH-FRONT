@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Prontuario } from './prontuario';
 import { Observable } from 'rxjs';
 
@@ -35,6 +35,11 @@ export class ProntuarioService {
         console.log(response);
       }
     );
+  }
+
+  duplicar(idProntuario: number, idUsuario: number): Observable<Prontuario> {
+    const params = { 'idUsuario': idUsuario.toString() };
+    return this.http.post<Prontuario>(`/api/prontuario/${idProntuario}/duplicar`, null, {params});
   }
 
 

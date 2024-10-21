@@ -12,6 +12,8 @@ import { SecaoData } from '../secao';
 import { QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
 import { firstValueFrom } from 'rxjs';
+import { UsuarioService } from '../usuario.service';
+import { Usuario, UsuarioCreate } from '../usuario';
 
 @Component({
   selector: 'app-prontuario-view',
@@ -24,6 +26,7 @@ export class ProntuarioViewComponent {
   route : ActivatedRoute = inject(ActivatedRoute);
   buttonSrc: string = 'button.png';
   estadoProntuario: string = 'visualizacao';
+  usuarioService: UsuarioService = inject(UsuarioService);
   prontuarioService: ProntuarioService = inject(ProntuarioService);
   secaoService: SecaoService = inject(SecaoService);
   quesitoService: QuesitoService = inject(QuesitoService);
@@ -122,5 +125,22 @@ export class ProntuarioViewComponent {
   // DEBUG ONLY FUNCTION; REMOVE LATER
   changeProntuarioState() {
     this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
+  }
+
+  async makeProntuarioCopy() {
+    // const newUsuario : UsuarioCreate = {
+    //   nome: 'Usuario Fantasma',
+    //   login: 'login',
+    //   senha: 'senha',
+    //   tipoUsuario: 'PADRAO'
+    // };
+    // const usuarioCriado = await firstValueFrom(this.usuarioService.create(newUsuario));
+
+    // const idUsuarioCriado = usuarioCriado.id;
+    const idUsuarioCriado = 1;
+
+    const prontuarioCopiado = await firstValueFrom(this.prontuarioService.duplicar(this.prontuario.id, idUsuarioCriado));
+    console.log('Prontuario copiado!');
+    console.log(prontuarioCopiado);
   }
 }
