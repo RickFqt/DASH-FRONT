@@ -14,7 +14,7 @@
     </div>
   
     <!-- Conteúdo da Seção/Subseção -->
-    <div [hidden] = "!isVisible" class="section-content">
+    <div [ngClass]="{'section-content': true, 'expanded': isVisible, 'collapsed': !isVisible}">
       <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
         <app-quesito [quesito]="quesito" [quesitoIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-quesito>
       </div>
