@@ -30,15 +30,15 @@ export class QuesitoComponent {
     // console.log(this.quesito);
     // console.log(this.quesito.respostaId);
     if(this.estadoProntuario === 'visualizacao') {
-      console.log("Oi");
-      console.log(this.resposta);
+      // console.log("Oi");
+      // console.log(this.resposta);
       const respostaId = this.quesito.respostaId;
 
       if(respostaId) {
         this.getResposta(respostaId).then(
           (resposta) => {
             this.resposta = resposta;
-            console.log(this.resposta);
+            // console.log(this.resposta);
           });
       }
     }

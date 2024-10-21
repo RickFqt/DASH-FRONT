@@ -3,6 +3,11 @@
   font-family: 'Nunito', sans-serif;
 }
 
+.quesito {
+  /* display: flex; */
+  margin-bottom: 10px ;
+}
+
 .question-header {
   font-weight: bold;
   margin-bottom: 10px;
@@ -57,8 +62,8 @@
   background-color: #F5F8FA;
   border: 1px solid #D3E2E5;
   padding: 10px;
-  margin-bottom: 40px;
-  margin-top: 40px;
+  /* margin-bottom: 40px; */
+  /* margin-top: 40px; */
   height: 42px;
 }
 

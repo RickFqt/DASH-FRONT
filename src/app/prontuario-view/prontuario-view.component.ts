@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SectionComponent } from '../section/section.component';
 import { ProntuarioService } from '../prontuario.service';
 import { SecaoService } from '../secao.service';
@@ -32,6 +32,7 @@ export class ProntuarioViewComponent {
   quesitoService: QuesitoService = inject(QuesitoService);
   opcaoService: OpcaoService = inject(OpcaoService);
   respostaService: RespostaService = inject(RespostaService);
+  router: Router = inject(Router);
 
   prontuario : ProntuarioData = {} as ProntuarioData;
 
@@ -41,7 +42,7 @@ export class ProntuarioViewComponent {
     this.mapProntuarioById(prontuarioId).then(
       (prontuarioData) => {
         this.prontuario = prontuarioData;
-        console.log(this.prontuario);
+        // console.log(this.prontuario);
       }
     );
   }
@@ -127,7 +128,7 @@ export class ProntuarioViewComponent {
     this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
   }
 
-  async makeProntuarioCopy() {
+  async makeProntuarioCopy(): Promise<void> {
     // const newUsuario : UsuarioCreate = {
     //   nome: 'Usuario Fantasma',
     //   login: 'login',
@@ -137,9 +138,12 @@ export class ProntuarioViewComponent {
     // const usuarioCriado = await firstValueFrom(this.usuarioService.create(newUsuario));
 
     // const idUsuarioCriado = usuarioCriado.id;
+    // TODO: Get the id of the user that is logged in
     const idUsuarioCriado = 1;
 
     const prontuarioCopiado = await firstValueFrom(this.prontuarioService.duplicar(this.prontuario.id, idUsuarioCriado));
+    this.prontuario = await this.mapProntuarioById(prontuarioCopiado.id);
+    this.router.navigate(['/prontuario', prontuarioCopiado.id]);
     console.log('Prontuario copiado!');
     console.log(prontuarioCopiado);
   }
