@@ -42,5 +42,9 @@ export class ProntuarioService {
     return this.http.post<Prontuario>(`/api/prontuario/${idProntuario}/duplicar`, null, {params});
   }
 
+  addFromTemplate(idProntuario: number): Observable<Prontuario> {
+    return this.http.post<Prontuario>(`/api/prontuario/template/${idProntuario}/addProntuario`, null);
+  }
+
 
 }

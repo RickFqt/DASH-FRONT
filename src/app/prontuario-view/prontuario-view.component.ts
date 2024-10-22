@@ -45,6 +45,7 @@ export class ProntuarioViewComponent {
     this.mapProntuarioById(prontuarioId).then(
       (prontuarioData) => {
         this.prontuario = prontuarioData;
+        // prontuarioData.ehTemplate = true;
         // console.log(this.prontuario);
       }
     );
@@ -149,7 +150,7 @@ export class ProntuarioViewComponent {
     this.router.navigate(['/prontuario', prontuarioCopiado.id]);
     console.log('Prontuario copiado!');
     console.log(prontuarioCopiado);
-    this.mensagemSucesso = 'Prontuário criado com sucesso!';
+    this.mensagemSucesso = 'Prontuário copiado com sucesso!';
     this.mostrarPopUp = true;
 
     // Fechar automaticamente o pop-up após 3 segundos (opcional)
@@ -160,5 +161,23 @@ export class ProntuarioViewComponent {
 
   fecharPopUp() {
     this.mostrarPopUp = false;
+  }
+
+  async makeProntuarioFromTemplate(): Promise<void> {
+    const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
+
+    const prontuarioCriado = await firstValueFrom(this.prontuarioService.addFromTemplate(prontuarioId));
+    this.prontuario = await this.mapProntuarioById(prontuarioCriado.id);
+    this.router.navigate(['/prontuario', prontuarioCriado.id]);
+    console.log('Prontuario criado a partir de template!');
+    console.log(prontuarioCriado);
+    this.mensagemSucesso = 'Prontuário criado a partir de template!';
+    this.mostrarPopUp = true;
+
+    // Fechar automaticamente o pop-up após 3 segundos (opcional)
+    setTimeout(() => {
+      this.fecharPopUp();
+    }, 3000);
+
   }
 }
