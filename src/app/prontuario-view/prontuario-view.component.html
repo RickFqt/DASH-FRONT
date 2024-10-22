@@ -6,8 +6,7 @@
       <img class="back-button"
         [ngClass]="{ 'flipped': true }"
         [src]="buttonSrc" 
-        alt="Botão" 
-        class="button" 
+        alt="Botão"
         (mouseenter)="onHoverButton()"
         (mouseleave)="onLeaveButton()">
     </a>
@@ -15,8 +14,27 @@
 
 	<!-- Bloco 2: Principal com as informações do formulário -->
 	<div class="main-content">
+
+    <div *ngIf="mostrarPopUp" class="popup-overlay" (click)="fecharPopUp()">
+      <div class="popup-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="fecharPopUp()">&times;</span>
+        <p>{{ mensagemSucesso }}</p>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1 class="title">{{ prontuario.nome }} <span *ngIf="prontuario.ehTemplate">&#64;Template</span></h1>
+      <span>
+        <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
+        (click)="makeProntuarioFromTemplate()">
+        <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
+        (click)="makeProntuarioCopy()">
+      </span>
+      <!-- <button class="top-right-button">Clique aqui</button> -->
+    </div>
+    <!-- <div class="header">
+    </div> -->
     <!-- Título -->
-    <h1 class="title">{{ prontuario.nome }}</h1>
     
     <!-- Descrição -->
     <p class="description">{{ prontuario.descricao }}</p>

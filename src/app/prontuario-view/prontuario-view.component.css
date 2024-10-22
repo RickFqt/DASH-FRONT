@@ -17,7 +17,7 @@
   top: 0;
   left: 0;
   height: 100vh; /* Sempre terá a altura da tela */
-  width: 6.7vw; /* 6.7% da largura da tela */
+  width: 5vw; /* 6.7% da largura da tela */
   min-width: 96px; /* Largura mínima de 96px */
   background-color: #85CEC3; /* Cor de fundo do bloco lateral */
   display: flex;
@@ -34,6 +34,7 @@
 .back-button {
   margin-bottom: 20px;
   padding: 10px 20px;
+  width: 100px; /* Botão ocupa 80% da largura da sidebar */
   /* background-color: #3498db; */
   /* color: white; */
   /* border: none; */
@@ -41,13 +42,10 @@
   cursor: pointer;
 }
 
-.back-button:hover {
-  background-color: #2980b9; /* Cor ao passar o mouse */
-}
 
 /* Bloco 2: Principal */
 .main-content {
-  margin-left: calc(max(6.7vw, 96px) + 21px); /* Distância de 21px do bloco lateral */
+  margin-left: calc(max(5vw, 96px) + 21px); /* Distância de 21px do bloco lateral */
   margin-right: 21px; /* Margem de 21px da direita */
   margin-top: 11px;
   margin-bottom: 11px;
@@ -62,7 +60,7 @@
 /* Título */
 .title {
   margin-left: 42px;
-  margin-top: 63px;
+  /* margin-top: 63px; */
   font-size: 50px;
   font-weight: 800;
 }
@@ -83,12 +81,34 @@
 }
 
 /* Cabeçalho da Seção */
-.section-header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 42px;
-  margin-right: 21px;
+}
+
+
+
+.top-right-buttons {
+  width: 60px;
+  /* background-color: #19b614; */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.top-right-buttons:hover {
+  background-color: #cfdbe0;
+}
+
+.plus-button {
+  margin-right: 10px;
+}
+
+.copy-button {
+  margin-right: 42px;
 }
 
 /* Título da Seção */
@@ -108,7 +128,7 @@
 }
 
 .toggle-button:hover {
-  background-color: #2980b9;
+  background-color: #cfdbe0;
 }
 
 /* Conteúdo da Seção */
@@ -136,4 +156,39 @@
 .sections {
   margin-left: 42px;
   margin-right: 42px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+.popup-content p {
+  font-size: 18px;
+  color: green;
+}
+
+.close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 24px;
+  cursor: pointer;
 }
