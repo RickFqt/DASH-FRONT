@@ -15,9 +15,7 @@
 
 .answer {
   display: flex;
-  align-items: center;
-  border-radius: 16px;
-  height: 42px;
+  flex-direction: column;
   gap: 10px; /* Espaçamento entre as opções */
 }
 
@@ -64,7 +62,7 @@
   padding: 10px;
   /* margin-bottom: 40px; */
   /* margin-top: 40px; */
-  height: 42px;
+  /* height: 42px; */
 }
 
 .dissertativa-curta {

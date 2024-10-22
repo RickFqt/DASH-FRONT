@@ -36,6 +36,9 @@ export class ProntuarioViewComponent {
 
   prontuario : ProntuarioData = {} as ProntuarioData;
 
+  mensagemSucesso: string | null = null;
+  mostrarPopUp: boolean = false;
+
   ngOnInit() {
     const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
 
@@ -146,5 +149,16 @@ export class ProntuarioViewComponent {
     this.router.navigate(['/prontuario', prontuarioCopiado.id]);
     console.log('Prontuario copiado!');
     console.log(prontuarioCopiado);
+    this.mensagemSucesso = 'Prontuário criado com sucesso!';
+    this.mostrarPopUp = true;
+
+    // Fechar automaticamente o pop-up após 3 segundos (opcional)
+    setTimeout(() => {
+      this.fecharPopUp();
+    }, 3000);
+  }
+
+  fecharPopUp() {
+    this.mostrarPopUp = false;
   }
 }

@@ -15,6 +15,13 @@
 	<!-- Bloco 2: Principal com as informações do formulário -->
 	<div class="main-content">
 
+    <div *ngIf="mostrarPopUp" class="popup-overlay" (click)="fecharPopUp()">
+      <div class="popup-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="fecharPopUp()">&times;</span>
+        <p>{{ mensagemSucesso }}</p>
+      </div>
+    </div>
+
     <div class="header">
       <h1 class="title">{{ prontuario.nome }}</h1>
       <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-button"
