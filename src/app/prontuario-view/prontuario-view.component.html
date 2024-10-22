@@ -1,0 +1,56 @@
+<div class="container">
+	<!-- Bloco 1: Lateral fixa com logo e botão -->
+	<div class="sidebar">
+		<img src="DASH_logo.png" alt="Logo" class="logo">
+		<a [routerLink]="['/home']">
+      <img class="back-button"
+        [ngClass]="{ 'flipped': true }"
+        [src]="buttonSrc" 
+        alt="Botão"
+        (mouseenter)="onHoverButton()"
+        (mouseleave)="onLeaveButton()">
+    </a>
+	</div>
+
+	<!-- Bloco 2: Principal com as informações do formulário -->
+	<div class="main-content">
+
+    <div *ngIf="mostrarPopUp" class="popup-overlay" (click)="fecharPopUp()">
+      <div class="popup-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="fecharPopUp()">&times;</span>
+        <p>{{ mensagemSucesso }}</p>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1 class="title">{{ prontuario.nome }} <span *ngIf="prontuario.ehTemplate">&#64;Template</span></h1>
+      <span>
+        <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
+        (click)="makeProntuarioFromTemplate()">
+        <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
+        (click)="makeProntuarioCopy()">
+      </span>
+      <!-- <button class="top-right-button">Clique aqui</button> -->
+    </div>
+    <!-- <div class="header">
+    </div> -->
+    <!-- Título -->
+    
+    <!-- Descrição -->
+    <p class="description">{{ prontuario.descricao }}</p>
+
+    <hr class="section-separator">
+    
+    <!-- Seções -->
+    <div class="sections" *ngFor="let section of prontuario.secoes; let i = index">
+      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-section>
+      <hr class="section-separator">
+    </div>
+
+    <!-- Debug button -->
+    <!-- <div class="action-buttons">
+      <button (click)="changeProntuarioState()" class="btn btn-primary">Change State</button>
+    </div> -->
+
+</div>
+  
