@@ -27,6 +27,8 @@
       <span>
         <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
         (click)="makeProntuarioFromTemplate()">
+        <img src="edit_icon.svg" alt="Editar prontuario" class="top-right-buttons edit-button"
+        (click)="changeProntuarioState('editando')">
         <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
         (click)="makeProntuarioCopy()">
       </span>
@@ -40,17 +42,29 @@
     <p class="description">{{ prontuario.descricao }}</p>
 
     <hr class="section-separator">
+
+    <!-- Container para adicionar novas seções -->
+    <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
+      <input type="text" placeholder="Título da nova seção" [(ngModel)]="novaSecaoTitulo" class="new-section-input" />
+      <button (click)="adicionarSecao()" class="add-section-button">Adicionar Seção</button>
+    </div>
     
     <!-- Seções -->
     <div class="sections" *ngFor="let section of prontuario.secoes; let i = index">
-      <app-section [section]="section" [sectionIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-section>
+      <app-section 
+        [section]="section" 
+        [sectionIndex]="(i + 1).toString()" 
+        [estadoProntuario]="estadoProntuario"
+        (secaoAtualizada)="atualizarSecao($event)">
+      </app-section>
       <hr class="section-separator">
     </div>
 
     <!-- Debug button -->
     <!-- <div class="action-buttons">
-      <button (click)="changeProntuarioState()" class="btn btn-primary">Change State</button>
+      <button (click)="changeProntuarioStateDebug()" class="btn btn-primary">Change State</button>
     </div> -->
+  </div>
 
 </div>
   
