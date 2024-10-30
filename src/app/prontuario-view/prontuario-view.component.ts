@@ -210,8 +210,62 @@ export class ProntuarioViewComponent {
     }
   }
 
-  atualizarSecao(secao: SecaoData) {
-    const index = this.prontuario.secoes.findIndex(s => s.id === secao.id);
-    this.prontuario.secoes[index] = secao;
+  adicionarSubSecao(event : {superSecaoId : number, subSecao : SecaoData}) {
+    const queue = [...this.prontuario.secoes];
+    let superSecao: SecaoData | undefined;
+
+    while (queue.length > 0) {
+      const currentSecao = queue.shift();
+      if (currentSecao.id === event.superSecaoId) {
+        superSecao = currentSecao;
+        break;
+      }
+      queue.push(...currentSecao.subSecoes);
+    }
+
+    if (!superSecao) {
+      throw new Error('Super seção não encontrada');
+    }
+    superSecao.subSecoesIds.push(event.subSecao.id);
+    superSecao.subSecoes.push(event.subSecao);
+  }
+
+  atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
+    if(event.superSecaoId === 0) {
+      const index = this.prontuario.secoes.findIndex(s => s.id === event.secaoAtualizada.id);
+      this.prontuario.secoes[index] = event.secaoAtualizada;
+    }
+
+    const queue = [...this.prontuario.secoes];
+    let superSecao: SecaoData | undefined;
+
+    while (queue.length > 0) {
+      const currentSecao = queue.shift();
+      if (currentSecao.id === event.superSecaoId) {
+        superSecao = currentSecao;
+        break;
+      }
+      queue.push(...currentSecao.subSecoes);
+    }
+    if (!superSecao) {
+      throw new Error('Super seção não encontrada');
+    }
+
+    const subSecaoIndex = superSecao.subSecoes.findIndex(s => s.id === event.secaoAtualizada.id);
+    if (subSecaoIndex !== -1) {
+      superSecao.subSecoes[subSecaoIndex] = event.secaoAtualizada;
+    }
+
+    const updateSuperSecao = (secoes: SecaoData[], superSecao: SecaoData) => {
+      for (let i = 0; i < secoes.length; i++) {
+        if (secoes[i].id === superSecao.id) {
+          secoes[i] = superSecao;
+          return;
+        }
+      updateSuperSecao(secoes[i].subSecoes, superSecao);
+      }
+    };
+
+    updateSuperSecao(this.prontuario.secoes, superSecao);
   }
 }
