@@ -3,6 +3,7 @@ import { Component, inject, Input } from '@angular/core';
 import { Resposta } from '../resposta';
 import { RespostaService } from '../resposta.service';
 import { firstValueFrom } from 'rxjs';
+import { QuesitoService } from '../quesito.service';
 
 @Component({
   selector: 'app-quesito',
@@ -15,7 +16,7 @@ export class QuesitoComponent {
   @Input() quesito: any;
   @Input() quesitoIndex: string = '';
   @Input() estadoProntuario: string = '';
-  // quesitoService : QuesitoService = inject(QuesitoService);
+  quesitoService : QuesitoService = inject(QuesitoService);
   respostaService : RespostaService = inject(RespostaService);
 
   resposta: Resposta = {
@@ -42,12 +43,23 @@ export class QuesitoComponent {
           });
       }
     }
+
+    this.isQuesitoHabilitado(this.quesito.id);
+
   }
 
 
   async getResposta(respostaId : number) : Promise<Resposta> {
     const resposta = await firstValueFrom(this.respostaService.getById(respostaId));
     return resposta;
+  }
+
+  // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+  quesitoHabilitado: boolean = true;
+
+  async isQuesitoHabilitado(quesitoId: number) {
+    const habilitado = await firstValueFrom(this.quesitoService.estaHabilitado(quesitoId));
+    this.quesitoHabilitado = habilitado;
   }
 
 }

@@ -19,4 +19,8 @@ export class QuesitoService {
   getById(id: number): Observable<Quesito> {
     return this.http.get<Quesito>(`/api/quesito/${id}`);
   }
+
+  estaHabilitado(quesitoId: number): Observable<boolean> {
+    return this.http.get<boolean>(`/api/quesito/${quesitoId}/estaHabilitado`);
+  }
 }
