@@ -8,17 +8,18 @@ import { QuesitoService } from '../quesito.service';
 import { OpcaoService } from '../opcao.service';
 import { RespostaService } from '../resposta.service';
 import { Prontuario, ProntuarioData } from '../prontuario';
-import { SecaoData } from '../secao';
+import { SecaoCreate, SecaoData } from '../secao';
 import { QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
 import { firstValueFrom } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-prontuario-view',
   standalone: true,
-  imports: [RouterModule, CommonModule, SectionComponent],
+  imports: [RouterModule, CommonModule, SectionComponent, FormsModule],
   templateUrl: './prontuario-view.component.html',
   styleUrl: './prontuario-view.component.css'
 })
@@ -127,8 +128,13 @@ export class ProntuarioViewComponent {
     this.buttonSrc = 'button.png';
   }
 
+  changeProntuarioState(estado: string) {
+    // Possiveis estados: visualizacao, respondendo, editando
+    this.estadoProntuario = estado;
+  }
+  
   // DEBUG ONLY FUNCTION; REMOVE LATER
-  changeProntuarioState() {
+  changeProntuarioStateDebug() {
     this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
   }
 
@@ -179,5 +185,87 @@ export class ProntuarioViewComponent {
       this.fecharPopUp();
     }, 3000);
 
+  }
+
+  // -------------------- Funcoes e atributos para o estado de edicao --------------------
+
+  novaSecaoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
+
+  async adicionarSecao(): Promise<void> {
+    if (this.novaSecaoTitulo.trim()) {
+      
+      const novaSecao : SecaoCreate = {
+        titulo: this.novaSecaoTitulo
+      };
+
+      // Adiciona a nova seção ao prontuário
+      const novaSecaoCriada = await firstValueFrom(this.prontuarioService.addSecao(this.prontuario.id, novaSecao));
+
+      // Atualiza o prontuário local
+      this.prontuario.secoesIds.push(novaSecaoCriada.id);
+      this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
+      this.novaSecaoTitulo = ''; // limpa o campo após a adição
+    } else {
+      alert('Por favor, insira um título para a seção.');
+    }
+  }
+
+  adicionarSubSecao(event : {superSecaoId : number, subSecao : SecaoData}) {
+    const queue = [...this.prontuario.secoes];
+    let superSecao: SecaoData | undefined;
+
+    while (queue.length > 0) {
+      const currentSecao = queue.shift();
+      if (currentSecao.id === event.superSecaoId) {
+        superSecao = currentSecao;
+        break;
+      }
+      queue.push(...currentSecao.subSecoes);
+    }
+
+    if (!superSecao) {
+      throw new Error('Super seção não encontrada');
+    }
+    superSecao.subSecoesIds.push(event.subSecao.id);
+    superSecao.subSecoes.push(event.subSecao);
+  }
+
+  atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
+    if(event.superSecaoId === 0) {
+      const index = this.prontuario.secoes.findIndex(s => s.id === event.secaoAtualizada.id);
+      this.prontuario.secoes[index] = event.secaoAtualizada;
+    }
+
+    const queue = [...this.prontuario.secoes];
+    let superSecao: SecaoData | undefined;
+
+    while (queue.length > 0) {
+      const currentSecao = queue.shift();
+      if (currentSecao.id === event.superSecaoId) {
+        superSecao = currentSecao;
+        break;
+      }
+      queue.push(...currentSecao.subSecoes);
+    }
+    if (!superSecao) {
+      throw new Error('Super seção não encontrada');
+    }
+
+    const subSecaoIndex = superSecao.subSecoes.findIndex(s => s.id === event.secaoAtualizada.id);
+    if (subSecaoIndex !== -1) {
+      superSecao.subSecoes[subSecaoIndex] = event.secaoAtualizada;
+    }
+
+    const updateSuperSecao = (secoes: SecaoData[], superSecao: SecaoData) => {
+      for (let i = 0; i < secoes.length; i++) {
+        if (secoes[i].id === superSecao.id) {
+          secoes[i] = superSecao;
+          return;
+        }
+      updateSuperSecao(secoes[i].subSecoes, superSecao);
+      }
+    };
+
+    updateSuperSecao(this.prontuario.secoes, superSecao);
   }
 }

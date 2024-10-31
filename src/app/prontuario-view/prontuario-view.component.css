@@ -91,6 +91,7 @@
 
 .top-right-buttons {
   width: 60px;
+  height: 60px;
   /* background-color: #19b614; */
   color: white;
   border: none;
@@ -101,6 +102,11 @@
 
 .top-right-buttons:hover {
   background-color: #cfdbe0;
+}
+
+.edit-button {
+  padding-right: 5px;
+  margin-right: 10px;
 }
 
 .plus-button {

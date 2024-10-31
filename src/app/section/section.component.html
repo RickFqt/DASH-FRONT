@@ -1,22 +1,42 @@
 <div class="section">
-    <div class="section-header" (click)="toggleSection()">
+
+    <!-- Cabeçalho da Seção/Subseção -->
+    <!-- Modo de visualização/respondendo -->
+    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="section-header" (click)="toggleSection()">
       <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2>
-      <!-- <button class="toggle-button" (click)="toggleSection()">
-        {{ isVisible ? 'Esconder' : 'Mostrar' }}
-      </button> -->
       <img
         class="toggle-button"
         src="section_button.png"
         alt="Mostrar/Esconder"
         [ngClass]="{ 'flipped': isVisible }"
       />
-
     </div>
+
+    <!-- Modo de edição -->
+    <div *ngIf="estadoProntuario === 'editando'" class="section-header">
+      <!-- <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2> -->
+      <div *ngIf="secaoEditando; else displayMode">
+        <input type="text" [(ngModel)]="secaoEditandoTitulo" />
+        <button (click)="salvarEdicaoSecao()">Salvar</button>
+        <button (click)="cancelarEdicao()">Cancelar</button>
+      </div>
+    </div>
+
+    <ng-template #displayMode class="section-header">
+      <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2>
+      <button (click)="editarSecao()">Editar</button>
+    </ng-template>
   
     <!-- Conteúdo da Seção/Subseção -->
     <div [ngClass]="{'section-content': true, 'expanded': isVisible, 'collapsed': !isVisible}">
       <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
         <app-quesito [quesito]="quesito" [quesitoIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-quesito>
+      </div>
+
+      <!-- Container para adicionar novas seções -->
+      <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
+        <input type="text" placeholder="Título da nova seção" [(ngModel)]="novaSecaoTitulo" class="new-section-input" />
+        <button (click)="adicionarSubSecao()" class="add-section-button">Adicionar Seção</button>
       </div>
   
       <!-- Subseções (Chamando o mesmo componente para subseções) -->
@@ -25,6 +45,8 @@
           [section]="subsection"
           [sectionIndex]="sectionIndex + '.' + (subIndex + 1)"
           [estadoProntuario]="estadoProntuario"
+          (secaoAtualizada)="atualizarSecaoPropagate($event)"
+          (subSecaoCriada)="adicionarSubSecaoPropagate($event)"
         ></app-section>
       </div>
     </div>

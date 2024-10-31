@@ -46,3 +46,23 @@ export class SecaoData implements Secao {
         this.subSecoes = subSecoes;
     }
 }
+
+export class SecaoCreate {
+    titulo: string;
+
+    constructor(titulo: string = '') {
+        this.titulo = titulo;
+    }
+}
+
+export class SecaoUpdate {
+    titulo: string;
+    ordem: number;
+    nivel: number;
+
+    constructor(titulo: string = '', ordem: number = 0, nivel: number = 0) {
+        this.titulo = titulo;
+        this.ordem = ordem;
+        this.nivel = nivel;
+    }
+}
