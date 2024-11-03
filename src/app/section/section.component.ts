@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { QuesitoComponent } from "../quesito/quesito.component";
-import { SecaoCreate, SecaoData, SecaoUpdate } from '../secao';
+import { SecaoComplete, SecaoCreate, SecaoData, SecaoUpdate } from '../secao';
 import { SecaoService } from '../secao.service';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
+import { ItemOutput } from '../itemoutput';
+import { QuesitoComplete } from '../quesito';
 
 @Component({
   selector: 'app-section',
@@ -15,7 +17,7 @@ import { RespostaCreate } from '../resposta';
   styleUrl: './section.component.css'
 })
 export class SectionComponent {
-  @Input() section: SecaoData = new SecaoData();
+  @Input() section: SecaoComplete = {} as SecaoComplete;
   @Input() sectionIndex: string = ''; // Para numerar as seções e subseções
   @Input() estadoProntuario: string = '';
   isVisible: boolean = true;
@@ -30,7 +32,7 @@ export class SectionComponent {
   secaoEditandoTitulo: string = '';  // Título temporário
   novaSecaoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
   novoQuesitoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
-  @Output() secaoAtualizada = new EventEmitter<{superSecaoId:number, secaoAtualizada:SecaoData}>();
+  @Output() secaoAtualizada = new EventEmitter<{superSecaoId:number, secaoAtualizada:SecaoComplete}>();
   @Output() subSecaoCriada = new EventEmitter<{superSecaoId: number, subSecao: SecaoData}>();
 
   // Método para iniciar a edição da seção
@@ -95,7 +97,7 @@ export class SectionComponent {
     }
   }
 
-  atualizarSecaoPropagate(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
+  atualizarSecaoPropagate(event : {superSecaoId: number, secaoAtualizada: SecaoComplete}) {
     this.secaoAtualizada.emit(event);
   }
 
@@ -113,5 +115,13 @@ export class SectionComponent {
 
   criarRespostaPropagate(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {
     this.criarResposta.emit(event);
+  }
+
+  castToQuesitoComplete(subItem: ItemOutput) {
+    return subItem as QuesitoComplete;
+  }
+
+  castToSecaoComplete(subItem: ItemOutput) {
+    return subItem as SecaoComplete;
   }
 }

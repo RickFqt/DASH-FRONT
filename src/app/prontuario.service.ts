@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Prontuario } from './prontuario';
+import { Prontuario, ProntuarioComplete } from './prontuario';
 import { Observable } from 'rxjs';
 import { Secao, SecaoCreate } from './secao';
 import { Resposta, RespostaCreate } from './resposta';
@@ -22,6 +22,11 @@ export class ProntuarioService {
 
   getById(id: number): Observable<Prontuario> {
     return this.http.get<Prontuario>(`/api/prontuario/${id}`);
+  }
+
+  getByIdComplete(id: number, incluirDesabilitados: boolean): Observable<ProntuarioComplete> {
+    const params = { 'incluirDesabilitados': incluirDesabilitados.toString() };
+    return this.http.get<ProntuarioComplete>(`/api/prontuario/${id}/complete`, {params});
   }
 
   addProntuario(nome: string, descricao: string, ): void {

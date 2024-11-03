@@ -5,7 +5,7 @@ import { RespostaService } from '../resposta.service';
 import { firstValueFrom } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
-import { QuesitoData } from '../quesito';
+import { QuesitoComplete, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './quesito.component.css'
 })
 export class QuesitoComponent {
-  @Input() quesito: QuesitoData = new QuesitoData();
+  @Input() quesito: QuesitoComplete = {} as QuesitoComplete;
   @Input() quesitoIndex: string = '';
   @Input() estadoProntuario: string = '';
   quesitoService : QuesitoService = inject(QuesitoService);
@@ -33,9 +33,9 @@ export class QuesitoComponent {
 
   ngOnInit() {
     if(this.estadoProntuario === 'visualizacao' || this.estadoProntuario === 'respondendo') {
-      const respostaId = this.quesito.respostaId;
-
-      if(respostaId) {
+      
+      if(this.quesito.resposta != null) {
+        const respostaId = this.quesito.resposta.id;
         this.getResposta(respostaId).then(
           (resposta) => {
             this.resposta = resposta;

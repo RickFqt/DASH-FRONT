@@ -51,8 +51,8 @@
         [section]="section" 
         [sectionIndex]="(i + 1).toString()" 
         [estadoProntuario]="estadoProntuario"
-        (secaoAtualizada)="atualizarSecao($event)"
-        (subSecaoCriada)="adicionarSubSecao($event)"
+        (secaoAtualizada)="refreshProntuario()"
+        (subSecaoCriada)="refreshProntuario()"
         (respostaAtualizada)="refreshProntuario()"
         (criarResposta)="salvarResposta($event)">
       </app-section>
