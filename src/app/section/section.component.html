@@ -29,9 +29,29 @@
   
     <!-- Conteúdo da Seção/Subseção -->
     <div [ngClass]="{'section-content': true, 'expanded': isVisible, 'collapsed': !isVisible}">
-      <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
-        <app-quesito [quesito]="quesito" [quesitoIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-quesito>
-      </div>
+      <!-- Quesitos -->
+        <!-- Modo de visualização/editando -->
+         <!-- TODO: Mudar condicao -->
+        <div class="quesitos" *ngIf="true">
+          <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
+            <app-quesito 
+              [quesito]="quesito" 
+              [quesitoIndex]="(i + 1).toString()" 
+              [estadoProntuario]="estadoProntuario"
+              (respostaAtualizada)="respostaAtualizadaPropagate()"
+              (criarResposta)="criarRespostaPropagate($event)"></app-quesito>
+          </div>
+        </div>
+
+        <!-- Modo de respondendo -->
+        <!-- <div *ngIf="estadoProntuario === 'respondendo'">
+          <div class="quesitos" *ngFor="let quesito of section.quesitos; let i = index">
+            <div *ngIf="isQuesitoHabilitado(quesito)">
+              <app-quesito [quesito]="quesito" [quesitoIndex]="(i + 1).toString()" [estadoProntuario]="estadoProntuario"></app-quesito>
+            </div>
+          </div>
+        </div> -->
+      <!-- Fim Quesitos -->
 
       <!-- Container para adicionar novas seções -->
       <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
@@ -47,6 +67,8 @@
           [estadoProntuario]="estadoProntuario"
           (secaoAtualizada)="atualizarSecaoPropagate($event)"
           (subSecaoCriada)="adicionarSubSecaoPropagate($event)"
+          (respostaAtualizada)="respostaAtualizadaPropagate()"
+          (criarResposta)="criarRespostaPropagate($event)"
         ></app-section>
       </div>
     </div>

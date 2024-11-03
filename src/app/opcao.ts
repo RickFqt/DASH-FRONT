@@ -3,4 +3,5 @@ export interface Opcao {
     textoAlternativa: string;
     ordem: number;
     quesitoId: number;
+    quesitosHabilitadosIds: number[];
 }

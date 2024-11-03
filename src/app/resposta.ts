@@ -4,3 +4,11 @@ export interface Resposta {
     opcoesMarcadasIds : number[];
     idQuesito : number;
 }
+
+export class RespostaCreate {
+    conteudo: string[];
+
+    constructor(conteudo: string[] = []) {
+        this.conteudo = conteudo;
+    }
+}

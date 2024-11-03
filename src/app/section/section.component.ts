@@ -5,6 +5,7 @@ import { SecaoCreate, SecaoData, SecaoUpdate } from '../secao';
 import { SecaoService } from '../secao.service';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { RespostaCreate } from '../resposta';
 
 @Component({
   selector: 'app-section',
@@ -100,5 +101,17 @@ export class SectionComponent {
 
   adicionarSubSecaoPropagate(event : {superSecaoId: number, subSecao: SecaoData}) {
     this.subSecaoCriada.emit(event);
+  }
+
+  // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+  @Output() respostaAtualizada = new EventEmitter();
+  @Output() criarResposta = new EventEmitter<{quesitoId:number, resposta:RespostaCreate, opcaoId:number}>();
+
+  respostaAtualizadaPropagate() {
+    this.respostaAtualizada.emit();
+  }
+
+  criarRespostaPropagate(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {
+    this.criarResposta.emit(event);
   }
 }

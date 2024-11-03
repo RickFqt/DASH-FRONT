@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
 import { FormsModule } from '@angular/forms';
+import { RespostaCreate } from '../resposta';
 
 @Component({
   selector: 'app-prontuario-view',
@@ -41,13 +42,15 @@ export class ProntuarioViewComponent {
   mostrarPopUp: boolean = false;
 
   ngOnInit() {
+    this.refreshProntuario();
+  }
+
+  refreshProntuario() {
     const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
 
     this.mapProntuarioById(prontuarioId).then(
       (prontuarioData) => {
         this.prontuario = prontuarioData;
-        // prontuarioData.ehTemplate = true;
-        // console.log(this.prontuario);
       }
     );
   }
@@ -115,7 +118,8 @@ export class ProntuarioViewComponent {
       id: opcao.id,
       textoAlternativa: opcao.textoAlternativa,
       ordem: opcao.ordem,
-      quesitoId: opcao.quesitoId
+      quesitoId: opcao.quesitoId,
+      quesitosHabilitadosIds: opcao.quesitosHabilitadosIds
     };
     return opcaoData;
   }
@@ -268,4 +272,37 @@ export class ProntuarioViewComponent {
 
     updateSuperSecao(this.prontuario.secoes, superSecao);
   }
+
+  // -------------------------------------------------------------------------------------
+
+  // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+
+  salvarRespostas() {
+    // TODO: Salvar respostas no banco de dados
+    console.log('Respostas salvas!');
+    this.mensagemSucesso = 'Respostas salvas com sucesso!';
+    this.mostrarPopUp = true;
+
+    // Fechar automaticamente o pop-up após 3 segundos (opcional)
+    setTimeout(() => {
+      this.fecharPopUp();
+    }, 3000);
+  }
+
+  salvarResposta(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {
+    
+    this.prontuarioService.addResposta(this.prontuario.id, event.quesitoId, event.resposta).subscribe(
+      (resposta) => {
+        
+        this.respostaService.addOpcaoMarcada(resposta.id, event.opcaoId).subscribe(
+          (resposta) => {
+            this.refreshProntuario();
+            console.log('Resposta salva!');
+          }
+        );
+      }
+    );
+  }
+
+
 }

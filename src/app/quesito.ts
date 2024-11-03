@@ -31,18 +31,18 @@ export class QuesitoData implements Quesito {
     subQuesitos: any[];
 
     constructor(
-        id: number,
-        enunciado: string,
-        obrigatorio: boolean,
-        ordem: number,
-        nivel: number,
-        tipoResposta: string,
-        superQuesitoId: number,
-        secaoId: number,
-        respostaId: number,
-        opcoesHabilitadorasIds: number[],
-        subQuesitosIds: number[],
-        opcoesIds: number[],
+        id: number = 0,
+        enunciado: string = '',
+        obrigatorio: boolean = false,
+        ordem: number = 0,
+        nivel: number = 0,
+        tipoResposta: string = '',
+        superQuesitoId: number = 0,
+        secaoId: number = 0,
+        respostaId: number = 0,
+        opcoesHabilitadorasIds: number[] = [],
+        subQuesitosIds: number[] = [],
+        opcoesIds: number[] = [],
         opcoes: any[] = [],
         subQuesitos: any[] = []
     ) {

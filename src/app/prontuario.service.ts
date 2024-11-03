@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Prontuario } from './prontuario';
 import { Observable } from 'rxjs';
 import { Secao, SecaoCreate } from './secao';
+import { Resposta, RespostaCreate } from './resposta';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,10 @@ export class ProntuarioService {
 
   addSecao(idProntuario: number, secao: SecaoCreate): Observable<Secao> {
     return this.http.post<Secao>(`/api/prontuario/${idProntuario}/addSecao`, secao);
+  }
+
+  addResposta(idProntuario: number, idQuesito: number, resposta: RespostaCreate): Observable<Resposta> {
+    return this.http.post<Resposta>(`/api/prontuario/${idProntuario}/quesito/${idQuesito}/addResposta`, {resposta});
   }
 
 

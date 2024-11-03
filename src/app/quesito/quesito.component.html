@@ -22,7 +22,11 @@
       <!-- Objetiva simples -->
       <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">
         <div *ngFor="let opcao of quesito.opcoes" class="choice">
-          <input type="radio" [name]="'choice' + quesitoIndex" [value]="opcao">
+          <input 
+            type="radio" 
+            [name]="'choice' + quesitoIndex" 
+            [value]="opcao"
+            (change)="salvarRespostaSimples(opcao)">
           <span>{{ opcao.textoAlternativa }}</span>
         </div>
       </div>
@@ -30,7 +34,10 @@
       <!-- Objetiva múltipla -->
       <div *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'" class="choices-container">
         <div *ngFor="let opcao of quesito.opcoes" class="choice">
-          <input type="checkbox" [value]="opcao">
+          <input 
+          type="checkbox" 
+          [value]="opcao"
+          (change)="salvarRespostaMultipla(opcao, $event)">
           <span>{{ opcao.textoAlternativa }}</span>
         </div>
       </div>
