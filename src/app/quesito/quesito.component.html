@@ -9,14 +9,18 @@
     <!-- Campo de Resposta -->
     <div *ngIf="estadoProntuario === 'respondendo'" class="answer">
       <!-- Resposta dissertativa curta -->
+      <!-- TODO: checar se ngModel funciona -->
       <input *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'"
               class="short-answer" 
               type="text" 
+              [(ngModel)]="resposta.conteudo[0]"
               placeholder="Escreva sua resposta">
 
       <!-- Resposta dissertativa longa -->
+      <!-- TODO: checar se ngModel funciona -->
       <textarea *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'"
                 class="long-answer"
+                [(ngModel)]="resposta.conteudo[0]"
                 placeholder="Escreva sua resposta"></textarea>
 
       <!-- Objetiva simples -->
@@ -26,6 +30,7 @@
             type="radio" 
             [name]="'choice' + quesitoIndex" 
             [value]="opcao"
+            [checked]="selectedOpcoesIds[0] === opcao.id"
             (change)="salvarRespostaSimples(opcao)">
           <span>{{ opcao.textoAlternativa }}</span>
         </div>
@@ -37,6 +42,7 @@
           <input 
           type="checkbox" 
           [value]="opcao"
+          [checked]="selectedOpcoesIds.includes(opcao.id)"
           (change)="salvarRespostaMultipla(opcao, $event)">
           <span>{{ opcao.textoAlternativa }}</span>
         </div>

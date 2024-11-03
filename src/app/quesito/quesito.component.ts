@@ -6,11 +6,12 @@ import { firstValueFrom } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
 import { QuesitoData } from '../quesito';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-quesito',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './quesito.component.html',
   styleUrl: './quesito.component.css'
 })
