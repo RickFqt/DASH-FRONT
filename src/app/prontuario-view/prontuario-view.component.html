@@ -27,10 +27,10 @@
       <span>
         <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
         (click)="makeProntuarioFromTemplate()">
+        <img *ngIf="!prontuario.ehTemplate" src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
+        (click)="changeProntuarioState('respondendo')">
         <img src="eye_icon.svg" alt="Visualizar prontuario" class="top-right-buttons plus-button"
         (click)="changeProntuarioState('visualizacao')">
-        <img src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
-        (click)="changeProntuarioState('respondendo')">
         <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
         (click)="makeProntuarioCopy()">
       </span>
@@ -51,8 +51,8 @@
         [section]="section" 
         [sectionIndex]="(i + 1).toString()" 
         [estadoProntuario]="estadoProntuario"
-        (secaoAtualizada)="atualizarSecao($event)"
-        (subSecaoCriada)="adicionarSubSecao($event)"
+        (secaoAtualizada)="refreshProntuario()"
+        (subSecaoCriada)="refreshProntuario()"
         (respostaAtualizada)="refreshProntuario()"
         (criarResposta)="salvarResposta($event)">
       </app-section>
@@ -66,8 +66,8 @@
     </div>
 
     <!-- Botão de salvar resposta-->
-    <div *ngIf="estadoProntuario === 'respondendo'" class="action-buttons">
-      <button (click)="salvarRespostas()" class="btn btn-primary">Salvar Respostas</button>
+    <div *ngIf="estadoProntuario === 'respondendo'" class="save-button">
+      <button (click)="salvarRespostasDissertativas()" class="save-btn save-btn-primary">Salvar Respostas</button>
     </div>
 
     <!-- Debug button -->

@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Resposta, RespostaCreate } from '../resposta';
 import { RespostaService } from '../resposta.service';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
-import { QuesitoData } from '../quesito';
+import { QuesitoComplete, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
+import { ProntuarioService } from '../prontuario.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-quesito',
@@ -15,12 +17,14 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './quesito.component.html',
   styleUrl: './quesito.component.css'
 })
-export class QuesitoComponent {
-  @Input() quesito: QuesitoData = new QuesitoData();
+export class QuesitoComponent implements OnInit, OnDestroy {
+  route : ActivatedRoute = inject(ActivatedRoute);
+  @Input() quesito: QuesitoComplete = {} as QuesitoComplete;
   @Input() quesitoIndex: string = '';
   @Input() estadoProntuario: string = '';
   quesitoService : QuesitoService = inject(QuesitoService);
   respostaService : RespostaService = inject(RespostaService);
+  prontuarioService : ProntuarioService = inject(ProntuarioService);
   selectedOpcoesIds: number[] = [];
   selectedConteudo: string[] = [];
 
@@ -33,9 +37,9 @@ export class QuesitoComponent {
 
   ngOnInit() {
     if(this.estadoProntuario === 'visualizacao' || this.estadoProntuario === 'respondendo') {
-      const respostaId = this.quesito.respostaId;
-
-      if(respostaId) {
+      
+      if(this.quesito.resposta != null) {
+        const respostaId = this.quesito.resposta.id;
         this.getResposta(respostaId).then(
           (resposta) => {
             this.resposta = resposta;
@@ -46,6 +50,22 @@ export class QuesitoComponent {
     }
 
     this.isQuesitoHabilitado(this.quesito.id);
+
+    // TODO: Conseguir o id do prontuário por outro metodo
+    const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
+    
+
+    this.inputChanged.pipe(
+      debounceTime(500), // Tempo em milissegundos antes de salvar
+      switchMap(resposta => this.salvarRespostaDissertativa(prontuarioId)) // Chama o método de salvar
+    ).subscribe({
+      next: () => {
+        console.log('Resposta dissertativa salva com sucesso!');
+      },
+      error: err => {
+        console.error('Erro ao salvar a resposta dissertativa:', err);
+      }
+    });
 
   }
 
@@ -59,6 +79,8 @@ export class QuesitoComponent {
   quesitoHabilitado: boolean = true;
   @Output() respostaAtualizada = new EventEmitter();
   @Output() criarResposta = new EventEmitter<{quesitoId:number, resposta:RespostaCreate, opcaoId:number}>();
+  respostaDissertativa: string = '';
+  private inputChanged: Subject<string> = new Subject();
 
   async isQuesitoHabilitado(quesitoId: number) {
     const habilitado = await firstValueFrom(this.quesitoService.estaHabilitado(quesitoId));
@@ -100,7 +122,7 @@ export class QuesitoComponent {
   }
 
   salvarResposta(resposta : RespostaCreate, opcao: Opcao) {
-    if(this.resposta.id === 0) {
+    if(this.quesito.resposta === null) {
       this.criarResposta.emit({quesitoId: this.quesito.id, resposta: resposta, opcaoId: opcao.id});
     }
     else {
@@ -111,7 +133,7 @@ export class QuesitoComponent {
             (opcaoList) => {
               this.resposta = resposta;
               this.resposta.opcoesMarcadasIds = opcaoList.map(opcao => opcao.id);
-              // this.respostaAtualizada.emit();
+              this.respostaAtualizada.emit();
             }
           );
         }
@@ -127,5 +149,26 @@ export class QuesitoComponent {
     this.criarResposta.emit(event);
   }
 
+  ngOnDestroy() {
+    this.inputChanged.complete(); // Limpa o Subject ao destruir o componente
+  }
+
+  onInputChange(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.respostaDissertativa = value;
+    this.inputChanged.next(value); // Emite a nova resposta
+  } 
+
+  salvarRespostaDissertativa(prontuarioId: number): Observable<RespostaCreate> {
+    const resposta: RespostaCreate = {
+        conteudo: this.resposta.conteudo // Usar a variável que está ligando ao modelo
+    };
+
+    if (this.quesito.resposta === null) {
+        return this.prontuarioService.addResposta(prontuarioId, this.quesito.id, resposta);
+    } else {
+        return this.respostaService.update(this.resposta.id, resposta);
+    }
+  }
 
 }

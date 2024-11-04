@@ -199,27 +199,29 @@
   cursor: pointer;
 }
 
-.action-buttons {
+.save-button {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   margin-top: 20px;
   color: green;
 }
 
-.btn {
+.save-btn {
   padding: 10px 20px;
-  margin: 0 10px;
+  margin: 0 42px;
   background-color: #3498db;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 24px;
+  font-family: 'Nunito', sans-serif;
 }
 
-.btn:hover {
+.save-btn:hover {
   background-color: #cfdbe0;
 }
 
-.btn-primary {
-  background-color: #3498db;
+.save-btn-primary {
+  background-color: #85CEC3;
 }

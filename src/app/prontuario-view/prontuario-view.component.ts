@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SectionComponent } from '../section/section.component';
 import { ProntuarioService } from '../prontuario.service';
@@ -7,15 +7,16 @@ import { SecaoService } from '../secao.service';
 import { QuesitoService } from '../quesito.service';
 import { OpcaoService } from '../opcao.service';
 import { RespostaService } from '../resposta.service';
-import { Prontuario, ProntuarioData } from '../prontuario';
-import { SecaoCreate, SecaoData } from '../secao';
-import { QuesitoData } from '../quesito';
+import { Prontuario, ProntuarioComplete, ProntuarioData } from '../prontuario';
+import { SecaoComplete, SecaoCreate, SecaoData } from '../secao';
+import { QuesitoComplete, QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
 import { firstValueFrom } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
 import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
+import { ItemOutput } from '../itemoutput';
 
 @Component({
   selector: 'app-prontuario-view',
@@ -36,92 +37,26 @@ export class ProntuarioViewComponent {
   respostaService: RespostaService = inject(RespostaService);
   router: Router = inject(Router);
 
-  prontuario : ProntuarioData = {} as ProntuarioData;
+  prontuario : ProntuarioComplete = {} as ProntuarioComplete;
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
 
   ngOnInit() {
+    this.changeProntuarioState('visualizacao');
     this.refreshProntuario();
   }
 
-  refreshProntuario() {
-    const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
+  refreshProntuario(id: number = 0) {
+    const prontuarioId = (id != 0 ? id : parseInt(this.route.snapshot.params['id'], 10));
 
-    this.mapProntuarioById(prontuarioId).then(
+    const incluirDesabilitados : boolean = this.estadoProntuario === 'editando' ? true : false;
+
+    this.prontuarioService.getByIdComplete(prontuarioId, incluirDesabilitados).subscribe(
       (prontuarioData) => {
         this.prontuario = prontuarioData;
       }
     );
-  }
-
-  private async mapProntuarioById(prontuarioId: number): Promise<ProntuarioData> {
-    const prontuario = await firstValueFrom(this.prontuarioService.getById(prontuarioId));
-    const prontuarioData : ProntuarioData = {
-      id: prontuario.id,
-      nome: prontuario.nome,
-      descricao: prontuario.descricao,
-      finalizado: prontuario.finalizado,
-      ehPublico: prontuario.ehPublico,
-      ehTemplate: prontuario.ehTemplate,
-      usuarioId: prontuario.usuarioId,
-      secoesIds: prontuario.secoesIds,
-      secoes: await Promise.all(prontuario.secoesIds.map(secaoId => this.mapSecaoById(secaoId)))
-    }
-    return prontuarioData;
-  }
-
-
-  private async mapSecaoById(secaoId: number): Promise<any> {
-    const secao = await firstValueFrom(this.secaoService.getById(secaoId));
-
-    const secaoData: SecaoData = {
-      id: secao.id,
-      titulo: secao.titulo,
-      ordem: secao.ordem,
-      nivel: secao.nivel,
-      subSecoesIds: secao.subSecoesIds,
-      superSecaoId: secao.superSecaoId,
-      prontuarioId: secao.prontuarioId,
-      quesitosIds: secao.quesitosIds,
-      quesitos: await Promise.all(secao.quesitosIds.map(quesitoId => this.mapQuesitoById(quesitoId))),
-      subSecoes: await Promise.all(secao.subSecoesIds.map(subSecaoId => this.mapSecaoById(subSecaoId)))
-    };
-
-    return secaoData;
-  }
-
-  private async mapQuesitoById(quesitoId: number): Promise<any> {
-    const quesito = await firstValueFrom(this.quesitoService.getById(quesitoId));
-    const quesitoData: QuesitoData = {
-      id: quesito.id,
-      enunciado: quesito.enunciado,
-      obrigatorio: quesito.obrigatorio,
-      ordem: quesito.ordem,
-      nivel: quesito.nivel,
-      tipoResposta: quesito.tipoResposta,
-      superQuesitoId: quesito.superQuesitoId,
-      secaoId: quesito.secaoId,
-      respostaId: quesito.respostaId,
-      opcoesHabilitadorasIds: quesito.opcoesHabilitadorasIds,
-      subQuesitosIds: quesito.subQuesitosIds,
-      opcoesIds: quesito.opcoesIds,
-      opcoes: await Promise.all(quesito.opcoesIds.map(opcaoId => this.mapOpcaoById(opcaoId))),
-      subQuesitos: await Promise.all(quesito.subQuesitosIds.map(subQuesitoId => this.mapQuesitoById(subQuesitoId)))
-    };
-    return quesitoData;
-  }
-
-  private async mapOpcaoById(opcaoId: number): Promise<any> {
-    const opcao = await firstValueFrom(this.opcaoService.getById(opcaoId));
-    const opcaoData: Opcao = {
-      id: opcao.id,
-      textoAlternativa: opcao.textoAlternativa,
-      ordem: opcao.ordem,
-      quesitoId: opcao.quesitoId,
-      quesitosHabilitadosIds: opcao.quesitosHabilitadosIds
-    };
-    return opcaoData;
   }
 
   onHoverButton() {
@@ -156,8 +91,9 @@ export class ProntuarioViewComponent {
     const idUsuarioCriado = 1;
 
     const prontuarioCopiado = await firstValueFrom(this.prontuarioService.duplicar(this.prontuario.id, idUsuarioCriado));
-    this.prontuario = await this.mapProntuarioById(prontuarioCopiado.id);
     this.router.navigate(['/prontuario', prontuarioCopiado.id]);
+    this.refreshProntuario(prontuarioCopiado.id);
+    // this.prontuario = await this.mapProntuarioById(prontuarioCopiado.id);
     console.log('Prontuario copiado!');
     console.log(prontuarioCopiado);
     this.mensagemSucesso = 'Prontuário copiado com sucesso!';
@@ -177,8 +113,9 @@ export class ProntuarioViewComponent {
     const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
 
     const prontuarioCriado = await firstValueFrom(this.prontuarioService.addFromTemplate(prontuarioId));
-    this.prontuario = await this.mapProntuarioById(prontuarioCriado.id);
+    // this.prontuario = await this.mapProntuarioById(prontuarioCriado.id);
     this.router.navigate(['/prontuario', prontuarioCriado.id]);
+    this.refreshProntuario(prontuarioCriado.id);
     console.log('Prontuario criado a partir de template!');
     console.log(prontuarioCriado);
     this.mensagemSucesso = 'Prontuário criado a partir de template!';
@@ -204,10 +141,10 @@ export class ProntuarioViewComponent {
 
       // Adiciona a nova seção ao prontuário
       const novaSecaoCriada = await firstValueFrom(this.prontuarioService.addSecao(this.prontuario.id, novaSecao));
-
+      this.refreshProntuario(novaSecaoCriada.id);
       // Atualiza o prontuário local
-      this.prontuario.secoesIds.push(novaSecaoCriada.id);
-      this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
+      // this.prontuario.secoesIds.push(novaSecaoCriada.id);
+      // this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
       this.novaSecaoTitulo = ''; // limpa o campo após a adição
     } else {
       alert('Por favor, insira um título para a seção.');
@@ -215,78 +152,32 @@ export class ProntuarioViewComponent {
   }
 
   adicionarSubSecao(event : {superSecaoId : number, subSecao : SecaoData}) {
-    const queue = [...this.prontuario.secoes];
-    let superSecao: SecaoData | undefined;
-
-    while (queue.length > 0) {
-      const currentSecao = queue.shift();
-      if (currentSecao.id === event.superSecaoId) {
-        superSecao = currentSecao;
-        break;
-      }
-      queue.push(...currentSecao.subSecoes);
-    }
-
-    if (!superSecao) {
-      throw new Error('Super seção não encontrada');
-    }
-    superSecao.subSecoesIds.push(event.subSecao.id);
-    superSecao.subSecoes.push(event.subSecao);
+    this.refreshProntuario();
   }
 
   atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
-    if(event.superSecaoId === 0) {
-      const index = this.prontuario.secoes.findIndex(s => s.id === event.secaoAtualizada.id);
-      this.prontuario.secoes[index] = event.secaoAtualizada;
-    }
-
-    const queue = [...this.prontuario.secoes];
-    let superSecao: SecaoData | undefined;
-
-    while (queue.length > 0) {
-      const currentSecao = queue.shift();
-      if (currentSecao.id === event.superSecaoId) {
-        superSecao = currentSecao;
-        break;
-      }
-      queue.push(...currentSecao.subSecoes);
-    }
-    if (!superSecao) {
-      throw new Error('Super seção não encontrada');
-    }
-
-    const subSecaoIndex = superSecao.subSecoes.findIndex(s => s.id === event.secaoAtualizada.id);
-    if (subSecaoIndex !== -1) {
-      superSecao.subSecoes[subSecaoIndex] = event.secaoAtualizada;
-    }
-
-    const updateSuperSecao = (secoes: SecaoData[], superSecao: SecaoData) => {
-      for (let i = 0; i < secoes.length; i++) {
-        if (secoes[i].id === superSecao.id) {
-          secoes[i] = superSecao;
-          return;
-        }
-      updateSuperSecao(secoes[i].subSecoes, superSecao);
-      }
-    };
-
-    updateSuperSecao(this.prontuario.secoes, superSecao);
+    this.refreshProntuario();
   }
 
   // -------------------------------------------------------------------------------------
 
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+  @ViewChildren(SectionComponent) secaoComponents!: QueryList<SectionComponent>;
+  // @Output() salvarRespostasDissertativas = new EventEmitter();
 
-  salvarRespostas() {
-    // TODO: Salvar respostas no banco de dados
-    console.log('Respostas salvas!');
-    this.mensagemSucesso = 'Respostas salvas com sucesso!';
-    this.mostrarPopUp = true;
+  salvarRespostasDissertativas() {
 
-    // Fechar automaticamente o pop-up após 3 segundos (opcional)
-    setTimeout(() => {
-      this.fecharPopUp();
-    }, 3000);
+    const prontuarioId = this.prontuario.id;
+    
+    const salvarRequisicoes = this.secaoComponents.map(secaoComponent => secaoComponent.salvarRespostasDissertativas(prontuarioId));
+
+    Promise.all(salvarRequisicoes).then(() => {
+      // this.refreshProntuario();
+      console.log('Respostas salvas!');
+      this.mensagemSucesso = 'Respostas salvas com sucesso!';
+      this.mostrarPopUp = true;
+
+    });
   }
 
   salvarResposta(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {
