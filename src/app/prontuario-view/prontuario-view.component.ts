@@ -127,6 +127,33 @@ export class ProntuarioViewComponent {
     }, 3000);
 
   }
+  // -------------------- Funcoes e atributos para o estado de visualizacao --------------------
+
+  gerarDiagnosticoLLM() {
+    this.prontuarioService.gerarDiagnosticoLLM(this.prontuario.id).subscribe(
+      (response) => {
+        this.refreshProntuario();
+      }
+    );
+
+    const text = this.prontuario.diagnosticoLLM;
+    const textarea = document.getElementById("diagnosticoLLM") as HTMLTextAreaElement;
+    let index = 0;
+
+    function type() {
+      if (index < text.length) {
+        textarea.value += text.charAt(index);
+        index++;
+        setTimeout(type, 20);
+      }
+    }
+
+    type();
+  }
+
+  wait(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   // -------------------- Funcoes e atributos para o estado de edicao --------------------
 
