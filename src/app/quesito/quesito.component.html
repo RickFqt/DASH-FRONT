@@ -14,14 +14,16 @@
               class="short-answer" 
               type="text" 
               [(ngModel)]="resposta.conteudo[0]"
-              placeholder="Escreva sua resposta">
+              placeholder="Escreva sua resposta"
+              (input)="onInputChange($event)">
 
       <!-- Resposta dissertativa longa -->
       <!-- TODO: checar se ngModel funciona -->
       <textarea *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'"
                 class="long-answer"
                 [(ngModel)]="resposta.conteudo[0]"
-                placeholder="Escreva sua resposta"></textarea>
+                placeholder="Escreva sua resposta"
+                (input)="onInputChange($event)"></textarea>
 
       <!-- Objetiva simples -->
       <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'" class="choices-container">

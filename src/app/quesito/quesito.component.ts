@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Resposta, RespostaCreate } from '../resposta';
 import { RespostaService } from '../resposta.service';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
 import { QuesitoComplete, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
 import { ProntuarioService } from '../prontuario.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-quesito',
@@ -16,7 +17,8 @@ import { ProntuarioService } from '../prontuario.service';
   templateUrl: './quesito.component.html',
   styleUrl: './quesito.component.css'
 })
-export class QuesitoComponent {
+export class QuesitoComponent implements OnInit, OnDestroy {
+  route : ActivatedRoute = inject(ActivatedRoute);
   @Input() quesito: QuesitoComplete = {} as QuesitoComplete;
   @Input() quesitoIndex: string = '';
   @Input() estadoProntuario: string = '';
@@ -49,6 +51,22 @@ export class QuesitoComponent {
 
     this.isQuesitoHabilitado(this.quesito.id);
 
+    // TODO: Conseguir o id do prontuário por outro metodo
+    const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
+    
+
+    this.inputChanged.pipe(
+      debounceTime(500), // Tempo em milissegundos antes de salvar
+      switchMap(resposta => this.salvarRespostaDissertativa(prontuarioId)) // Chama o método de salvar
+    ).subscribe({
+      next: () => {
+        console.log('Resposta dissertativa salva com sucesso!');
+      },
+      error: err => {
+        console.error('Erro ao salvar a resposta dissertativa:', err);
+      }
+    });
+
   }
 
 
@@ -61,6 +79,8 @@ export class QuesitoComponent {
   quesitoHabilitado: boolean = true;
   @Output() respostaAtualizada = new EventEmitter();
   @Output() criarResposta = new EventEmitter<{quesitoId:number, resposta:RespostaCreate, opcaoId:number}>();
+  respostaDissertativa: string = '';
+  private inputChanged: Subject<string> = new Subject();
 
   async isQuesitoHabilitado(quesitoId: number) {
     const habilitado = await firstValueFrom(this.quesitoService.estaHabilitado(quesitoId));
@@ -113,7 +133,7 @@ export class QuesitoComponent {
             (opcaoList) => {
               this.resposta = resposta;
               this.resposta.opcoesMarcadasIds = opcaoList.map(opcao => opcao.id);
-              // this.respostaAtualizada.emit();
+              this.respostaAtualizada.emit();
             }
           );
         }
@@ -129,25 +149,25 @@ export class QuesitoComponent {
     this.criarResposta.emit(event);
   }
 
-  salvarRespostaDissertativa(prontuarioId: number) {
+  ngOnDestroy() {
+    this.inputChanged.complete(); // Limpa o Subject ao destruir o componente
+  }
 
-    const resposta : RespostaCreate = {
-      conteudo: this.resposta.conteudo
-    }
+  onInputChange(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.respostaDissertativa = value;
+    this.inputChanged.next(value); // Emite a nova resposta
+  } 
 
-    if(this.quesito.resposta === null) {
-      this.prontuarioService.addResposta(prontuarioId, this.quesito.id, resposta).subscribe(
-        (resposta) => {
-          this.resposta = resposta;
-        }
-      );
-    }
-    else {
-      this.respostaService.update(this.resposta.id, resposta).subscribe(
-        (resposta) => {
-          this.resposta = resposta;
-        }
-      );
+  salvarRespostaDissertativa(prontuarioId: number): Observable<RespostaCreate> {
+    const resposta: RespostaCreate = {
+        conteudo: this.resposta.conteudo // Usar a variável que está ligando ao modelo
+    };
+
+    if (this.quesito.resposta === null) {
+        return this.prontuarioService.addResposta(prontuarioId, this.quesito.id, resposta);
+    } else {
+        return this.respostaService.update(this.resposta.id, resposta);
     }
   }
 
