@@ -61,5 +61,9 @@ export class ProntuarioService {
     return this.http.post<Resposta>(`/api/prontuario/${idProntuario}/quesito/${idQuesito}/addResposta`, resposta);
   }
 
+  gerarDiagnosticoLLM(idProntuario: number): Observable<{conteudo: string}> {
+    return this.http.get<{conteudo: string}>(`/api/prontuario/${idProntuario}/diagnosticoLLM`);
+  }
+
 
 }

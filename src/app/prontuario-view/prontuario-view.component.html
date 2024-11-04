@@ -59,6 +59,26 @@
       <hr class="section-separator">
     </div>
 
+    
+    <div *ngIf="estadoProntuario === 'visualizacao'"  class="sections">
+      <div class="llm-header">
+        <h2 class="llm-title">Diagnóstico de IA</h2>
+        <img
+          class="llm-button"
+          src="llm_button.svg"
+          alt="Gerar Diagnóstico por IA"
+          (click)="gerarDiagnosticoLLM()"
+        />
+      </div>
+      <textarea 
+                id="diagnosticoLLM"
+                class="long-answer"
+                [(ngModel)]="prontuario.diagnosticoLLM"
+                [disabled]="true"
+                placeholder="Gere seu diagnóstico com IA"
+                ></textarea>
+    </div>
+
     <!-- Container para adicionar novas seções -->
     <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
       <input type="text" placeholder="Título da nova seção" [(ngModel)]="novaSecaoTitulo" class="new-section-input" />
