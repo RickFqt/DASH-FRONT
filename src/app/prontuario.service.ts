@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Prontuario } from './prontuario';
+import { Prontuario, ProntuarioComplete } from './prontuario';
 import { Observable } from 'rxjs';
 import { Secao, SecaoCreate } from './secao';
+import { Resposta, RespostaCreate } from './resposta';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,11 @@ export class ProntuarioService {
 
   getById(id: number): Observable<Prontuario> {
     return this.http.get<Prontuario>(`/api/prontuario/${id}`);
+  }
+
+  getByIdComplete(id: number, incluirDesabilitados: boolean): Observable<ProntuarioComplete> {
+    const params = { 'incluirDesabilitados': incluirDesabilitados.toString() };
+    return this.http.get<ProntuarioComplete>(`/api/prontuario/${id}/complete`, {params});
   }
 
   addProntuario(nome: string, descricao: string, ): void {
@@ -49,6 +55,10 @@ export class ProntuarioService {
 
   addSecao(idProntuario: number, secao: SecaoCreate): Observable<Secao> {
     return this.http.post<Secao>(`/api/prontuario/${idProntuario}/addSecao`, secao);
+  }
+
+  addResposta(idProntuario: number, idQuesito: number, resposta: RespostaCreate): Observable<Resposta> {
+    return this.http.post<Resposta>(`/api/prontuario/${idProntuario}/quesito/${idQuesito}/addResposta`, resposta);
   }
 
 
