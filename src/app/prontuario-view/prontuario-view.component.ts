@@ -11,7 +11,7 @@ import { Prontuario, ProntuarioComplete, ProntuarioData } from '../prontuario';
 import { SecaoComplete, SecaoCreate, SecaoData } from '../secao';
 import { QuesitoComplete, QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
-import { firstValueFrom } from 'rxjs';
+import { concatMap, firstValueFrom, Observable, switchMap, tap } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
 import { FormsModule } from '@angular/forms';
@@ -37,14 +37,18 @@ export class ProntuarioViewComponent {
   respostaService: RespostaService = inject(RespostaService);
   router: Router = inject(Router);
 
+
   prontuario : ProntuarioComplete = {} as ProntuarioComplete;
+  displayedText: string = '';
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
 
   ngOnInit() {
     this.changeProntuarioState('visualizacao');
-    this.refreshProntuario();
+    this.refreshProntuarioAsync().subscribe(() => {
+      this.displayedText = this.prontuario.diagnosticoLLM || "";
+    });
   }
 
   refreshProntuario(id: number = 0) {
@@ -70,6 +74,7 @@ export class ProntuarioViewComponent {
   changeProntuarioState(estado: string) {
     // Possiveis estados: visualizacao, respondendo, editando
     this.estadoProntuario = estado;
+    this.refreshProntuario();
   }
   
   // DEBUG ONLY FUNCTION; REMOVE LATER
@@ -125,36 +130,49 @@ export class ProntuarioViewComponent {
     setTimeout(() => {
       this.fecharPopUp();
     }, 3000);
-
   }
   // -------------------- Funcoes e atributos para o estado de visualizacao --------------------
-
   gerarDiagnosticoLLM() {
-    this.prontuarioService.gerarDiagnosticoLLM(this.prontuario.id).subscribe(
-      (response) => {
-        this.refreshProntuario();
-      }
-    );
-
-    const text = this.prontuario.diagnosticoLLM;
     const textarea = document.getElementById("diagnosticoLLM") as HTMLTextAreaElement;
-    let index = 0;
+    textarea.value = "Gerando diagnóstico..."; 
+    this.prontuarioService.gerarDiagnosticoLLM(this.prontuario.id).subscribe(() => {
+      // Aguarda o refresh do prontuário antes de iniciar a animação
+      this.refreshProntuarioAsync().subscribe(() => {
+        const text = this.prontuario.diagnosticoLLM;
+        
+        let index = 0;
+        const textarea = document.getElementById("diagnosticoLLM") as HTMLTextAreaElement;
+        textarea.value = "";; // Limpa o conteúdo exibido para começar a animação
 
-    function type() {
-      if (index < text.length) {
-        textarea.value += text.charAt(index);
-        index++;
-        setTimeout(type, 20);
-      }
-    }
+        function type() {
+          if (index < text.length) {
+            textarea.value += text.charAt(index);
+            textarea.scrollTop = textarea.scrollHeight;
+            index++;
+            setTimeout(type, 10); // Ajuste a velocidade conforme necessário
+          }
+        }
 
-    type();
+        // Inicia a animação de digitação
+        type();
+      });
+    });
   }
 
-  wait(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  refreshProntuarioAsync(id: number = 0): Observable<void> {
+    const prontuarioId = (id !== 0 ? id : parseInt(this.route.snapshot.params['id'], 10));
+    const incluirDesabilitados: boolean = this.estadoProntuario === 'editando';
 
+    return new Observable<void>((observer) => {
+      this.prontuarioService.getByIdComplete(prontuarioId, incluirDesabilitados).subscribe(
+        (prontuarioData) => {
+          this.prontuario = prontuarioData;
+          observer.next();
+          observer.complete();
+        }
+      );
+    });
+  }
   // -------------------- Funcoes e atributos para o estado de edicao --------------------
 
   novaSecaoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
@@ -214,13 +232,14 @@ export class ProntuarioViewComponent {
         
         this.respostaService.addOpcaoMarcada(resposta.id, event.opcaoId).subscribe(
           (resposta) => {
-            this.refreshProntuario();
+            this.refreshProntuarioAsync();
             console.log('Resposta salva!');
           }
         );
       }
     );
   }
+  
 
 
 }
