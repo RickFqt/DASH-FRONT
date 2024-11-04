@@ -100,7 +100,7 @@ export class QuesitoComponent {
   }
 
   salvarResposta(resposta : RespostaCreate, opcao: Opcao) {
-    if(this.resposta.id === 0) {
+    if(this.quesito.resposta === null) {
       this.criarResposta.emit({quesitoId: this.quesito.id, resposta: resposta, opcaoId: opcao.id});
     }
     else {

@@ -27,10 +27,10 @@
       <span>
         <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
         (click)="makeProntuarioFromTemplate()">
+        <img *ngIf="!prontuario.ehTemplate" src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
+        (click)="changeProntuarioState('respondendo')">
         <img src="eye_icon.svg" alt="Visualizar prontuario" class="top-right-buttons plus-button"
         (click)="changeProntuarioState('visualizacao')">
-        <img src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
-        (click)="changeProntuarioState('respondendo')">
         <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
         (click)="makeProntuarioCopy()">
       </span>
