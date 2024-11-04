@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, QueryList, ViewChildren } from '@angular/core';
 import { QuesitoComponent } from "../quesito/quesito.component";
 import { SecaoComplete, SecaoCreate, SecaoData, SecaoUpdate } from '../secao';
 import { SecaoService } from '../secao.service';
@@ -108,6 +108,8 @@ export class SectionComponent {
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------
   @Output() respostaAtualizada = new EventEmitter();
   @Output() criarResposta = new EventEmitter<{quesitoId:number, resposta:RespostaCreate, opcaoId:number}>();
+  @ViewChildren(QuesitoComponent) quesitoComponents!: QueryList<QuesitoComponent>;
+  @ViewChildren(SectionComponent) subSecaoComponents!: QueryList<SectionComponent>;
 
   respostaAtualizadaPropagate() {
     this.respostaAtualizada.emit();
@@ -123,5 +125,14 @@ export class SectionComponent {
 
   castToSecaoComplete(subItem: ItemOutput) {
     return subItem as SecaoComplete;
+  }
+
+  salvarRespostasDissertativas(prontuarioId: number) {
+    const salvarRequisicoesQuesitos = this.quesitoComponents.map(quesitoComponent => quesitoComponent.salvarRespostaDissertativa(prontuarioId));
+    const salvarRequisicoesSubSecoes = this.subSecaoComponents.map(subSecaoComponent => subSecaoComponent.salvarRespostasDissertativas(prontuarioId));
+
+    Promise.all([...salvarRequisicoesQuesitos, ...salvarRequisicoesSubSecoes]).then(() => {
+      
+    });
   }
 }

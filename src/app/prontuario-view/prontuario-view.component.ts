@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SectionComponent } from '../section/section.component';
 import { ProntuarioService } from '../prontuario.service';
@@ -8,14 +8,15 @@ import { QuesitoService } from '../quesito.service';
 import { OpcaoService } from '../opcao.service';
 import { RespostaService } from '../resposta.service';
 import { Prontuario, ProntuarioComplete, ProntuarioData } from '../prontuario';
-import { SecaoCreate, SecaoData } from '../secao';
-import { QuesitoData } from '../quesito';
+import { SecaoComplete, SecaoCreate, SecaoData } from '../secao';
+import { QuesitoComplete, QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
 import { firstValueFrom } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
 import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
+import { ItemOutput } from '../itemoutput';
 
 @Component({
   selector: 'app-prontuario-view',
@@ -161,17 +162,22 @@ export class ProntuarioViewComponent {
   // -------------------------------------------------------------------------------------
 
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+  @ViewChildren(SectionComponent) secaoComponents!: QueryList<SectionComponent>;
+  // @Output() salvarRespostasDissertativas = new EventEmitter();
 
-  salvarRespostas() {
-    // TODO: Salvar respostas no banco de dados
-    console.log('Respostas salvas!');
-    this.mensagemSucesso = 'Respostas salvas com sucesso!';
-    this.mostrarPopUp = true;
+  salvarRespostasDissertativas() {
 
-    // Fechar automaticamente o pop-up após 3 segundos (opcional)
-    setTimeout(() => {
-      this.fecharPopUp();
-    }, 3000);
+    const prontuarioId = this.prontuario.id;
+    
+    const salvarRequisicoes = this.secaoComponents.map(secaoComponent => secaoComponent.salvarRespostasDissertativas(prontuarioId));
+
+    Promise.all(salvarRequisicoes).then(() => {
+      // this.refreshProntuario();
+      console.log('Respostas salvas!');
+      this.mensagemSucesso = 'Respostas salvas com sucesso!';
+      this.mostrarPopUp = true;
+
+    });
   }
 
   salvarResposta(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {

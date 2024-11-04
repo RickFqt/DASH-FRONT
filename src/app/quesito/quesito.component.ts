@@ -7,6 +7,7 @@ import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
 import { QuesitoComplete, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
+import { ProntuarioService } from '../prontuario.service';
 
 @Component({
   selector: 'app-quesito',
@@ -21,6 +22,7 @@ export class QuesitoComponent {
   @Input() estadoProntuario: string = '';
   quesitoService : QuesitoService = inject(QuesitoService);
   respostaService : RespostaService = inject(RespostaService);
+  prontuarioService : ProntuarioService = inject(ProntuarioService);
   selectedOpcoesIds: number[] = [];
   selectedConteudo: string[] = [];
 
@@ -127,5 +129,26 @@ export class QuesitoComponent {
     this.criarResposta.emit(event);
   }
 
+  salvarRespostaDissertativa(prontuarioId: number) {
+
+    const resposta : RespostaCreate = {
+      conteudo: this.resposta.conteudo
+    }
+
+    if(this.quesito.resposta === null) {
+      this.prontuarioService.addResposta(prontuarioId, this.quesito.id, resposta).subscribe(
+        (resposta) => {
+          this.resposta = resposta;
+        }
+      );
+    }
+    else {
+      this.respostaService.update(this.resposta.id, resposta).subscribe(
+        (resposta) => {
+          this.resposta = resposta;
+        }
+      );
+    }
+  }
 
 }
