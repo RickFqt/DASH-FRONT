@@ -58,7 +58,7 @@ export class ProntuarioService {
   }
 
   addResposta(idProntuario: number, idQuesito: number, resposta: RespostaCreate): Observable<Resposta> {
-    return this.http.post<Resposta>(`/api/prontuario/${idProntuario}/quesito/${idQuesito}/addResposta`, {resposta});
+    return this.http.post<Resposta>(`/api/prontuario/${idProntuario}/quesito/${idQuesito}/addResposta`, resposta);
   }
 
 
