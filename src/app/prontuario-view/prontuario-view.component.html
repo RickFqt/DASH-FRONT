@@ -59,6 +59,24 @@
       <hr class="section-separator">
     </div>
 
+    <div *ngIf="estadoProntuario === 'visualizacao'"  class="sections">
+      <div class="llm-header">
+        <h2 class="llm-title">Diagnóstico Pré-Cadastrado</h2>
+        <img
+          class="llm-button"
+          src="DASH_logo.svg"
+          alt="Gerar Diagnóstico por IA"
+          (click)="gerarDiagnosticoPreCadastrado()"
+        />
+      </div>
+      <textarea 
+                id="diagnosticoPreCadastrado"
+                class="campoDiagnosticoPreCadastrado"
+                [value]="displayedDiagnosticoText"
+                [disabled]="true"
+                placeholder="Recupere seu diagnóstico pré-cadastrado"
+                ></textarea>
+    </div>
     
     <div *ngIf="estadoProntuario === 'visualizacao'"  class="sections">
       <div class="llm-header">

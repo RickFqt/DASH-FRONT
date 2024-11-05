@@ -4,6 +4,7 @@ import { Prontuario, ProntuarioComplete } from './prontuario';
 import { Observable } from 'rxjs';
 import { Secao, SecaoCreate } from './secao';
 import { Resposta, RespostaCreate } from './resposta';
+import { Diagnostico } from './diagnostico';
 
 @Injectable({
   providedIn: 'root'
@@ -63,6 +64,10 @@ export class ProntuarioService {
 
   gerarDiagnosticoLLM(idProntuario: number): Observable<{conteudo: string}> {
     return this.http.get<{conteudo: string}>(`/api/prontuario/${idProntuario}/diagnosticoLLM`);
+  }
+
+  gerarDiagnostico(idProntuario: number): Observable<Diagnostico> {
+    return this.http.get<Diagnostico>(`/api/prontuario/${idProntuario}/diagnostico`);
   }
 
 

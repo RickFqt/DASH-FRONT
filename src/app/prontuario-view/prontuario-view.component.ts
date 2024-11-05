@@ -40,6 +40,7 @@ export class ProntuarioViewComponent {
 
   prontuario : ProntuarioComplete = {} as ProntuarioComplete;
   displayedText: string = '';
+  displayedDiagnosticoText: string = '';
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
@@ -159,6 +160,16 @@ export class ProntuarioViewComponent {
     });
   }
 
+  gerarDiagnosticoPreCadastrado() {
+    this.prontuarioService.gerarDiagnostico(this.prontuario.id).subscribe((diagnostico) => {
+      const textarea = document.getElementById("diagnosticoPreCadastrado") as HTMLTextAreaElement;
+      textarea.value = diagnostico.descricao;
+      this.displayedDiagnosticoText = diagnostico.descricao;
+    });
+  }
+    
+    
+
   refreshProntuarioAsync(id: number = 0): Observable<void> {
     const prontuarioId = (id !== 0 ? id : parseInt(this.route.snapshot.params['id'], 10));
     const incluirDesabilitados: boolean = this.estadoProntuario === 'editando';
@@ -221,6 +232,8 @@ export class ProntuarioViewComponent {
       console.log('Respostas salvas!');
       this.mensagemSucesso = 'Respostas salvas com sucesso!';
       this.mostrarPopUp = true;
+
+      this.changeProntuarioState('visualizacao');
 
     });
   }
