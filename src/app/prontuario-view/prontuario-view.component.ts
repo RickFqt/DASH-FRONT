@@ -74,7 +74,7 @@ export class ProntuarioViewComponent {
   changeProntuarioState(estado: string) {
     // Possiveis estados: visualizacao, respondendo, editando
     this.estadoProntuario = estado;
-    this.refreshProntuario();
+    // this.refreshProntuarioAsync().subscribe(() => {});
   }
   
   // DEBUG ONLY FUNCTION; REMOVE LATER
@@ -232,7 +232,7 @@ export class ProntuarioViewComponent {
         
         this.respostaService.addOpcaoMarcada(resposta.id, event.opcaoId).subscribe(
           (resposta) => {
-            this.refreshProntuarioAsync();
+            this.refreshProntuario();
             console.log('Resposta salva!');
           }
         );
