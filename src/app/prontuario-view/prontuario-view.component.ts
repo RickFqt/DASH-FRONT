@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SectionComponent } from '../section/section.component';
 import { ProntuarioService } from '../prontuario.service';
@@ -7,18 +7,21 @@ import { SecaoService } from '../secao.service';
 import { QuesitoService } from '../quesito.service';
 import { OpcaoService } from '../opcao.service';
 import { RespostaService } from '../resposta.service';
-import { Prontuario, ProntuarioData } from '../prontuario';
-import { SecaoData } from '../secao';
-import { QuesitoData } from '../quesito';
+import { Prontuario, ProntuarioComplete, ProntuarioData } from '../prontuario';
+import { SecaoComplete, SecaoCreate, SecaoData } from '../secao';
+import { QuesitoComplete, QuesitoData } from '../quesito';
 import { Opcao } from '../opcao';
-import { firstValueFrom } from 'rxjs';
+import { concatMap, firstValueFrom, Observable, switchMap, tap } from 'rxjs';
 import { UsuarioService } from '../usuario.service';
 import { Usuario, UsuarioCreate } from '../usuario';
+import { FormsModule } from '@angular/forms';
+import { RespostaCreate } from '../resposta';
+import { ItemOutput } from '../itemoutput';
 
 @Component({
   selector: 'app-prontuario-view',
   standalone: true,
-  imports: [RouterModule, CommonModule, SectionComponent],
+  imports: [RouterModule, CommonModule, SectionComponent, FormsModule],
   templateUrl: './prontuario-view.component.html',
   styleUrl: './prontuario-view.component.css'
 })
@@ -34,89 +37,31 @@ export class ProntuarioViewComponent {
   respostaService: RespostaService = inject(RespostaService);
   router: Router = inject(Router);
 
-  prontuario : ProntuarioData = {} as ProntuarioData;
+
+  prontuario : ProntuarioComplete = {} as ProntuarioComplete;
+  displayedText: string = '';
+  displayedDiagnosticoText: string = '';
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
 
   ngOnInit() {
-    const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
+    this.changeProntuarioState('visualizacao');
+    this.refreshProntuarioAsync().subscribe(() => {
+      this.displayedText = this.prontuario.diagnosticoLLM || "";
+    });
+  }
 
-    this.mapProntuarioById(prontuarioId).then(
+  refreshProntuario(id: number = 0) {
+    const prontuarioId = (id != 0 ? id : parseInt(this.route.snapshot.params['id'], 10));
+
+    const incluirDesabilitados : boolean = this.estadoProntuario === 'editando' ? true : false;
+
+    this.prontuarioService.getByIdComplete(prontuarioId, incluirDesabilitados).subscribe(
       (prontuarioData) => {
         this.prontuario = prontuarioData;
-        // prontuarioData.ehTemplate = true;
-        // console.log(this.prontuario);
       }
     );
-  }
-
-  private async mapProntuarioById(prontuarioId: number): Promise<ProntuarioData> {
-    const prontuario = await firstValueFrom(this.prontuarioService.getById(prontuarioId));
-    const prontuarioData : ProntuarioData = {
-      id: prontuario.id,
-      nome: prontuario.nome,
-      descricao: prontuario.descricao,
-      finalizado: prontuario.finalizado,
-      ehPublico: prontuario.ehPublico,
-      ehTemplate: prontuario.ehTemplate,
-      usuarioId: prontuario.usuarioId,
-      secoesIds: prontuario.secoesIds,
-      secoes: await Promise.all(prontuario.secoesIds.map(secaoId => this.mapSecaoById(secaoId)))
-    }
-    return prontuarioData;
-  }
-
-
-  private async mapSecaoById(secaoId: number): Promise<any> {
-    const secao = await firstValueFrom(this.secaoService.getById(secaoId));
-
-    const secaoData: SecaoData = {
-      id: secao.id,
-      titulo: secao.titulo,
-      ordem: secao.ordem,
-      nivel: secao.nivel,
-      subSecoesIds: secao.subSecoesIds,
-      superSecaoId: secao.superSecaoId,
-      prontuarioId: secao.prontuarioId,
-      quesitosIds: secao.quesitosIds,
-      quesitos: await Promise.all(secao.quesitosIds.map(quesitoId => this.mapQuesitoById(quesitoId))),
-      subSecoes: await Promise.all(secao.subSecoesIds.map(subSecaoId => this.mapSecaoById(subSecaoId)))
-    };
-
-    return secaoData;
-  }
-
-  private async mapQuesitoById(quesitoId: number): Promise<any> {
-    const quesito = await firstValueFrom(this.quesitoService.getById(quesitoId));
-    const quesitoData: QuesitoData = {
-      id: quesito.id,
-      enunciado: quesito.enunciado,
-      obrigatorio: quesito.obrigatorio,
-      ordem: quesito.ordem,
-      nivel: quesito.nivel,
-      tipoResposta: quesito.tipoResposta,
-      superQuesitoId: quesito.superQuesitoId,
-      secaoId: quesito.secaoId,
-      respostaId: quesito.respostaId,
-      opcoesHabilitadorasIds: quesito.opcoesHabilitadorasIds,
-      subQuesitosIds: quesito.subQuesitosIds,
-      opcoesIds: quesito.opcoesIds,
-      opcoes: await Promise.all(quesito.opcoesIds.map(opcaoId => this.mapOpcaoById(opcaoId))),
-      subQuesitos: await Promise.all(quesito.subQuesitosIds.map(subQuesitoId => this.mapQuesitoById(subQuesitoId)))
-    };
-    return quesitoData;
-  }
-
-  private async mapOpcaoById(opcaoId: number): Promise<any> {
-    const opcao = await firstValueFrom(this.opcaoService.getById(opcaoId));
-    const opcaoData: Opcao = {
-      id: opcao.id,
-      textoAlternativa: opcao.textoAlternativa,
-      ordem: opcao.ordem,
-      quesitoId: opcao.quesitoId
-    };
-    return opcaoData;
   }
 
   onHoverButton() {
@@ -127,8 +72,14 @@ export class ProntuarioViewComponent {
     this.buttonSrc = 'button.png';
   }
 
+  changeProntuarioState(estado: string) {
+    // Possiveis estados: visualizacao, respondendo, editando
+    this.estadoProntuario = estado;
+    // this.refreshProntuarioAsync().subscribe(() => {});
+  }
+  
   // DEBUG ONLY FUNCTION; REMOVE LATER
-  changeProntuarioState() {
+  changeProntuarioStateDebug() {
     this.estadoProntuario = this.estadoProntuario === 'visualizacao' ? 'respondendo' : 'visualizacao';
   }
 
@@ -146,8 +97,9 @@ export class ProntuarioViewComponent {
     const idUsuarioCriado = 1;
 
     const prontuarioCopiado = await firstValueFrom(this.prontuarioService.duplicar(this.prontuario.id, idUsuarioCriado));
-    this.prontuario = await this.mapProntuarioById(prontuarioCopiado.id);
     this.router.navigate(['/prontuario', prontuarioCopiado.id]);
+    this.refreshProntuario(prontuarioCopiado.id);
+    // this.prontuario = await this.mapProntuarioById(prontuarioCopiado.id);
     console.log('Prontuario copiado!');
     console.log(prontuarioCopiado);
     this.mensagemSucesso = 'Prontuário copiado com sucesso!';
@@ -167,8 +119,9 @@ export class ProntuarioViewComponent {
     const prontuarioId = parseInt(this.route.snapshot.params['id'], 10);
 
     const prontuarioCriado = await firstValueFrom(this.prontuarioService.addFromTemplate(prontuarioId));
-    this.prontuario = await this.mapProntuarioById(prontuarioCriado.id);
+    // this.prontuario = await this.mapProntuarioById(prontuarioCriado.id);
     this.router.navigate(['/prontuario', prontuarioCriado.id]);
+    this.refreshProntuario(prontuarioCriado.id);
     console.log('Prontuario criado a partir de template!');
     console.log(prontuarioCriado);
     this.mensagemSucesso = 'Prontuário criado a partir de template!';
@@ -178,6 +131,128 @@ export class ProntuarioViewComponent {
     setTimeout(() => {
       this.fecharPopUp();
     }, 3000);
-
   }
+  // -------------------- Funcoes e atributos para o estado de visualizacao --------------------
+  gerarDiagnosticoLLM() {
+    const textarea = document.getElementById("diagnosticoLLM") as HTMLTextAreaElement;
+    textarea.value = "Gerando diagnóstico..."; 
+    this.prontuarioService.gerarDiagnosticoLLM(this.prontuario.id).subscribe(() => {
+      // Aguarda o refresh do prontuário antes de iniciar a animação
+      this.refreshProntuarioAsync().subscribe(() => {
+        const text = this.prontuario.diagnosticoLLM;
+        
+        let index = 0;
+        const textarea = document.getElementById("diagnosticoLLM") as HTMLTextAreaElement;
+        textarea.value = "";; // Limpa o conteúdo exibido para começar a animação
+
+        function type() {
+          if (index < text.length) {
+            textarea.value += text.charAt(index);
+            textarea.scrollTop = textarea.scrollHeight;
+            index++;
+            setTimeout(type, 10); // Ajuste a velocidade conforme necessário
+          }
+        }
+
+        // Inicia a animação de digitação
+        type();
+      });
+    });
+  }
+
+  gerarDiagnosticoPreCadastrado() {
+    this.prontuarioService.gerarDiagnostico(this.prontuario.id).subscribe((diagnostico) => {
+      const textarea = document.getElementById("diagnosticoPreCadastrado") as HTMLTextAreaElement;
+      textarea.value = diagnostico.descricao;
+      this.displayedDiagnosticoText = diagnostico.descricao;
+    });
+  }
+    
+    
+
+  refreshProntuarioAsync(id: number = 0): Observable<void> {
+    const prontuarioId = (id !== 0 ? id : parseInt(this.route.snapshot.params['id'], 10));
+    const incluirDesabilitados: boolean = this.estadoProntuario === 'editando';
+
+    return new Observable<void>((observer) => {
+      this.prontuarioService.getByIdComplete(prontuarioId, incluirDesabilitados).subscribe(
+        (prontuarioData) => {
+          this.prontuario = prontuarioData;
+          observer.next();
+          observer.complete();
+        }
+      );
+    });
+  }
+  // -------------------- Funcoes e atributos para o estado de edicao --------------------
+
+  novaSecaoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
+
+  async adicionarSecao(): Promise<void> {
+    if (this.novaSecaoTitulo.trim()) {
+      
+      const novaSecao : SecaoCreate = {
+        titulo: this.novaSecaoTitulo
+      };
+
+      // Adiciona a nova seção ao prontuário
+      const novaSecaoCriada = await firstValueFrom(this.prontuarioService.addSecao(this.prontuario.id, novaSecao));
+      this.refreshProntuario(novaSecaoCriada.id);
+      // Atualiza o prontuário local
+      // this.prontuario.secoesIds.push(novaSecaoCriada.id);
+      // this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
+      this.novaSecaoTitulo = ''; // limpa o campo após a adição
+    } else {
+      alert('Por favor, insira um título para a seção.');
+    }
+  }
+
+  adicionarSubSecao(event : {superSecaoId : number, subSecao : SecaoData}) {
+    this.refreshProntuario();
+  }
+
+  atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
+    this.refreshProntuario();
+  }
+
+  // -------------------------------------------------------------------------------------
+
+  // -------------------- Funcoes e atributos para o estado de respondendo --------------------
+  @ViewChildren(SectionComponent) secaoComponents!: QueryList<SectionComponent>;
+  // @Output() salvarRespostasDissertativas = new EventEmitter();
+
+  salvarRespostasDissertativas() {
+
+    const prontuarioId = this.prontuario.id;
+    
+    const salvarRequisicoes = this.secaoComponents.map(secaoComponent => secaoComponent.salvarRespostasDissertativas(prontuarioId));
+
+    Promise.all(salvarRequisicoes).then(() => {
+      // this.refreshProntuario();
+      console.log('Respostas salvas!');
+      this.mensagemSucesso = 'Respostas salvas com sucesso!';
+      this.mostrarPopUp = true;
+
+      this.changeProntuarioState('visualizacao');
+
+    });
+  }
+
+  salvarResposta(event : {quesitoId:number, resposta:RespostaCreate, opcaoId:number}) {
+    
+    this.prontuarioService.addResposta(this.prontuario.id, event.quesitoId, event.resposta).subscribe(
+      (resposta) => {
+        
+        this.respostaService.addOpcaoMarcada(resposta.id, event.opcaoId).subscribe(
+          (resposta) => {
+            this.refreshProntuario();
+            console.log('Resposta salva!');
+          }
+        );
+      }
+    );
+  }
+  
+
+
 }

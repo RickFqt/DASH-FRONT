@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Secao } from './secao';
+import { Secao, SecaoCreate, SecaoUpdate } from './secao';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -18,5 +18,13 @@ export class SecaoService {
 
   getById(id: number): Observable<Secao> {
     return this.http.get<Secao>(`/api/secao/${id}`);
+  }
+
+  update(id:number, secao: SecaoUpdate): Observable<Secao> {
+    return this.http.put<Secao>(`/api/secao/${id}`, secao);
+  }
+
+  addSubSecao(id:number, secao: SecaoCreate): Observable<Secao> {
+    return this.http.post<Secao>(`/api/secao/${id}/addSubSecao`, secao);
   }
 }
