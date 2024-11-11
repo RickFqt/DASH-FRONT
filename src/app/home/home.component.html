@@ -1,13 +1,28 @@
-<section>
-    <form>
-        <input type="text" placeholder="Filter by city" #filter/>
-        <button class="primary" type="button" (click)="filterResults(filter.value)" >Search</button>
-    </form>
-</section>
-
-<section class="results">
-    <app-prontuario-item
-        *ngFor="let prontuario of prontuarioList"
-        [prontuario]="prontuario"
-    ></app-prontuario-item>
-</section>
+<div class="home-container">
+    <h1>Seus Prontuários</h1>
+    
+    <table class="prontuarios-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prontuario of prontuarioList">
+        <td>
+            {{ prontuario.nome }}
+            <span *ngIf="prontuario.ehTemplate" class="template-flag">Template</span>
+            </td>
+          <td>
+            <button (click)="visualizarProntuario(prontuario.id)">Visualizar</button>
+            <button >Responder</button>
+            <button >Copiar</button>
+            <button (click)="deletarProntuario(prontuario.id)">Deletar</button>
+            <button >PDF</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

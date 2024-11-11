@@ -46,7 +46,10 @@ export class ProntuarioViewComponent {
   mostrarPopUp: boolean = false;
 
   ngOnInit() {
-    this.changeProntuarioState('visualizacao');
+    this.route.queryParams.subscribe(params => {
+      this.estadoProntuario = params['estado'] || 'visualizacao'; // Valor padrão
+    });
+
     this.refreshProntuarioAsync().subscribe(() => {
       this.displayedText = this.prontuario.diagnosticoLLM || "";
     });

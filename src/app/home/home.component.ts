@@ -1,38 +1,51 @@
 import { Component, inject } from '@angular/core';
-import { ProntuarioItemComponent } from '../prontuario-item/prontuario-item.component';
 import { Prontuario } from '../prontuario';
 import { ProntuarioService } from '../prontuario.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ProntuarioItemComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
   prontuarioService: ProntuarioService = inject(ProntuarioService);
+  router: Router = inject(Router);
 
   prontuarioList: Prontuario[] = [];
   filteredProntuarioList: Prontuario[] = [];
 
-  constructor() {
-
-    this.prontuarioService.getAll().subscribe((prontuarioList: Prontuario[]) => {
-      this.prontuarioList = prontuarioList;
-      this.filteredProntuarioList = prontuarioList;
-    });
+  ngOnInit() {
+    this.carregarProntuarios();
   }
 
-  filterResults(text: string) {
-    if(!text) {
-      this.filteredProntuarioList = this.prontuarioList;
-      return;
-    }
+  visualizarProntuario(id: number) {
+    this.router.navigate(['/prontuario', id], { queryParams: { estado: 'visualizacao' } });
+  }
 
-    this.filteredProntuarioList = this.prontuarioList.filter((prontuario) => 
-      prontuario?.nome.toLowerCase().includes(text.toLowerCase())
-    );
+  responderProntuario(id: number) {
+    // Lógica para responder prontuário
+  }
+
+  copiarProntuario(id: number) {
+    // Lógica para copiar prontuário
+  }
+
+  deletarProntuario(id: number) {
+    if (confirm('Tem certeza que deseja deletar este prontuário?')) {
+      this.prontuarioService.delete(id).subscribe(() => {
+        this.carregarProntuarios(); // Atualiza lista
+      });
+    }
+  }
+
+  carregarProntuarios() {
+    // TODO: Mudar isso para carregar apenas os prontuários do usuário logado
+    this.prontuarioService.getAll().subscribe((data) => {
+      this.prontuarioList = data;
+    });
   }
 }

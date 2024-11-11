@@ -25,6 +25,10 @@ export class ProntuarioService {
     return this.http.get<Prontuario>(`/api/prontuario/${id}`);
   }
 
+  delete(id: number): Observable<boolean> {
+    return this.http.delete<boolean>(`/api/prontuario/${id}`);
+  }
+
   getByIdComplete(id: number, incluirDesabilitados: boolean): Observable<ProntuarioComplete> {
     const params = { 'incluirDesabilitados': incluirDesabilitados.toString() };
     return this.http.get<ProntuarioComplete>(`/api/prontuario/${id}/complete`, {params});
