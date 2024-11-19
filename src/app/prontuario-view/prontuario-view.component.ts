@@ -18,6 +18,9 @@ import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
 import { ItemOutput } from '../itemoutput';
 
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 @Component({
   selector: 'app-prontuario-view',
   standalone: true,
@@ -183,6 +186,26 @@ export class ProntuarioViewComponent {
         }
       );
     });
+  }
+
+  generatePDF() {
+    // Cria uma nova instância de jsPDF
+    const doc = new jsPDF();
+
+    // Adiciona texto
+    doc.text('Olá, este é um PDF gerado no Angular!', 10, 10);
+
+    // Adiciona uma tabela de exemplo
+    autoTable(doc, {
+      head: [['Coluna 1', 'Coluna 2', 'Coluna 3']],
+      body: [
+        ['Dado 1', 'Dado 2', 'Dado 3'],
+        ['Dado 4', 'Dado 5', 'Dado 6'],
+      ],
+    });
+
+    // Salva o PDF com o nome "documento.pdf"
+    doc.save('documento.pdf');
   }
   // -------------------- Funcoes e atributos para o estado de edicao --------------------
 
