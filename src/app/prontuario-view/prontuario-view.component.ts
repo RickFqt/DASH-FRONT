@@ -189,23 +189,137 @@ export class ProntuarioViewComponent {
   }
 
   generatePDF() {
+    this.prontuarioService.getByIdComplete(this.prontuario.id, false).subscribe(
+      (prontuario) => {
+        // Cria uma nova instância de jsPDF
+        const doc = new jsPDF('p', 'mm', 'a4');
+  
+        // Título
+        doc.setFontSize(20);
+        doc.setFont('Nunito', 'bold');
+        doc.text(prontuario.nome, 10, 20);
+        // Imprime se é template
+        if (prontuario.ehTemplate) {
+          doc.setFontSize(12);
+          doc.text('@Template', 60, 20);
+        }
+  
+        // Descrição
+        doc.setFontSize(14);
+        doc.setFont('Nunito', 'normal');
+        doc.text(prontuario.descricao || 'Sem descrição', 10, 30);
+  
+        // Seções
+        let yPosition = 40;
+        // Função para imprimir seções e subseções recursivamente
+        const printSection = (secao: any, depth: number = 0) => {
+          // Ajusta a indentação com base na profundidade
+          const indent = 10 + depth * 10;
+
+          // Título da seção ou subseção
+          doc.setFontSize(16 - depth); // Menor tamanho para subseções mais profundas
+          doc.setFont('Nunito', 'bold');
+          doc.text(`- ${secao.titulo}`, indent, yPosition);
+
+          // Separador
+          if(secao.nivel == 1){
+            yPosition += 5;
+            doc.setLineWidth(0.1);
+            doc.line(indent, yPosition, 200, yPosition);
+          }
+
+          // Conteúdo da seção
+          yPosition += 10;
+          doc.setFontSize(12);
+          doc.setFont('Nunito', 'normal');
+          const text = doc.splitTextToSize(secao.conteudo || '', 180 - depth * 10);
+          doc.text(text, indent, yPosition);
+          yPosition += text.length * 5 + 5;
+
+          // Adiciona nova página se necessário
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+
+          // Se a seção tiver subseções, chama a função recursivamente
+          if (secao.subsecoes && secao.subsecoes.length > 0) {
+            secao.subsecoes.forEach((subsecao: any) => printSection(subsecao, depth + 1));
+          }
+        };
+        prontuario.secoes.forEach((secao, index) => {
+          printSection(secao);
+
+          // Espaço após a seção principal
+          yPosition += 10;
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+        });
+  
+        // Salva o PDF com o nome do prontuário
+        doc.save(`${prontuario.nome}.pdf`);
+      },
+      (error) => {
+        console.error('Erro ao buscar o prontuário:', error);
+        alert('Não foi possível gerar o PDF.');
+      }
+    );
     // Cria uma nova instância de jsPDF
-    const doc = new jsPDF();
+    const doc = new jsPDF('p', 'mm', 'a4');
 
-    // Adiciona texto
-    doc.text('Olá, este é um PDF gerado no Angular!', 10, 10);
+    // Título
+    doc.setFontSize(20);
+    doc.setFont('Nunito', 'bold');
+    doc.text(this.prontuario.nome, 10, 20);
+    if (this.prontuario.ehTemplate) {
+      doc.setFontSize(12);
+      doc.text('@Template', 60, 20);
+    }
 
-    // Adiciona uma tabela de exemplo
-    autoTable(doc, {
-      head: [['Coluna 1', 'Coluna 2', 'Coluna 3']],
-      body: [
-        ['Dado 1', 'Dado 2', 'Dado 3'],
-        ['Dado 4', 'Dado 5', 'Dado 6'],
-      ],
+    // Descrição
+    doc.setFontSize(14);
+    doc.setFont('Nunito', 'normal');
+    doc.text(this.prontuario.descricao, 10, 30);
+
+    // Seções
+    let yPosition = 40;
+    this.prontuario.secoes.forEach((secao, index) => {
+      doc.setFontSize(16);
+      doc.setFont('Nunito', 'bold');
+      doc.text(`Seção ${index + 1}: ${secao.titulo}`, 10, yPosition);
+
+      // Separador
+      yPosition += 5;
+      doc.setLineWidth(0.1);
+      doc.line(10, yPosition, 200, yPosition);
+
+      // Conteúdo
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setFont('Nunito', 'normal');
+      const text = doc.splitTextToSize(secao.titulo, 180);
+      doc.text(text, 10, yPosition);
+      yPosition += text.length * 5 + 5;
     });
 
+    // Diagnóstico Pré-Cadastrado
+    // if (this.estadoProntuario === 'visualizacao') {
+    //   yPosition += 10;
+    //   doc.setFontSize(16);
+    //   doc.setFont('Nunito', 'bold');
+    //   doc.text('Diagnóstico Pré-Cadastrado:', 10, yPosition);
+
+    //   yPosition += 10;
+    //   doc.setFontSize(12);
+    //   doc.setFont('Nunito', 'normal');
+    //   doc.rect(10, yPosition, 180, 20); // Caixa para o diagnóstico
+    //   doc.text(this.displayedDiagnosticoText, 12, yPosition + 10);
+    // }
+
     // Salva o PDF com o nome "documento.pdf"
-    doc.save('documento.pdf');
+    doc.save(this.prontuario.nome+'.pdf');
   }
   // -------------------- Funcoes e atributos para o estado de edicao --------------------
 
