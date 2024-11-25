@@ -5,7 +5,7 @@ import { RespostaService } from '../resposta.service';
 import { debounceTime, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
 import { Opcao } from '../opcao';
-import { QuesitoComplete, QuesitoData } from '../quesito';
+import { QuesitoComplete, QuesitoCreate, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
 import { ProntuarioService } from '../prontuario.service';
 import { ActivatedRoute } from '@angular/router';
@@ -171,4 +171,61 @@ export class QuesitoComponent implements OnInit, OnDestroy {
     }
   }
 
+  // -------------------- Funcoes e atributos para o estado de editando --------------------
+  quesitoEditando: boolean = false;  // ID do quesito em edição
+  quesitoEditandoEnunciado: string = '';  // Título temporário
+  novoQuesitoEnunciado: string = ''; // para armazenar o título da nova seção temporariamente
+  @Output() quesitoAtualizado = new EventEmitter();
+  @Output() subQuesitoCriado = new EventEmitter();
+
+  // Método para iniciar a edição da seção
+  editarQuesito() {
+    this.quesitoEditando = true;
+    this.quesitoEditandoEnunciado = this.quesito.enunciado;
+  }
+
+  // Método para salvar a edição
+  async salvarEdicaoQuesito() {
+    const quesitoNovo = { ...this.quesito, enunciado: this.quesitoEditandoEnunciado };
+
+    // Atualiza o quesito no backend
+    await firstValueFrom(this.quesitoService.update(this.quesito.id, quesitoNovo));
+
+    this.quesitoAtualizado.emit();
+    this.quesitoEditando = false;
+
+  }
+
+  quesitoAtualizadoPropagate() {
+    this.quesitoAtualizado.emit();
+  }
+
+  // Método para cancelar a edição
+  cancelarEdicao() {
+    this.quesitoEditando = false;
+    this.quesitoEditandoEnunciado = '';
+  }
+
+  async adicionarSubQuesito(): Promise<void> {
+    if (this.novoQuesitoEnunciado.trim()) {
+      
+      const novoQuesito : QuesitoCreate = {
+        enunciado: this.novoQuesitoEnunciado,
+        tipoResposta: 'DISSERTATIVA_CURTA',
+      };
+
+      // Adiciona a novo quesito ao prontuário
+      const novoQuesitoCriado = await firstValueFrom(this.quesitoService.addSubQuesito(this.quesito.id, novoQuesito));
+
+      this.novoQuesitoEnunciado = ''; // limpa o campo após a adição
+      // Atualiza o prontuário local
+      this.subQuesitoCriado.emit();
+    } else {
+      alert('Por favor, insira um título para o quesito.');
+    }
+  }
+
+  subQuesitoCriadoPropagate() {
+    this.subQuesitoCriado.emit();
+  }
 }

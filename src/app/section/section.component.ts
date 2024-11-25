@@ -36,6 +36,8 @@ export class SectionComponent {
   @Output() secaoAtualizada = new EventEmitter<{superSecaoId:number, secaoAtualizada:SecaoComplete}>();
   @Output() subSecaoCriada = new EventEmitter<{superSecaoId: number, subSecao: SecaoData}>();
   @Output() quesitoCriado = new EventEmitter();
+  @Output() subQuesitoCriado = new EventEmitter();
+  @Output() quesitoAtualizado = new EventEmitter();
 
   // Método para iniciar a edição da seção
   editarSecao() {
@@ -128,6 +130,14 @@ export class SectionComponent {
 
   adicionarQuesitoPropagate() {
     this.quesitoCriado.emit();
+  }
+
+  adicionarSubQuesitoPropagate() {
+    this.subQuesitoCriado.emit();
+  }
+
+  quesitoAtualizadoPropagate() {
+    this.quesitoAtualizado.emit();
   }
 
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------

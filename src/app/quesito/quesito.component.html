@@ -1,10 +1,24 @@
-<div *ngIf="quesitoHabilitado || (estadoProntuario === 'visualizacao' || estadoProntuario === 'edicao')">
+<div *ngIf="quesitoHabilitado || (estadoProntuario === 'visualizacao' || estadoProntuario === 'editando')">
   <div class="quesito">
     <!-- Número e Texto do Quesito -->
-    <div class="quesito-header">
+    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="quesito-header">
       
       <span style="font-size: 20px;">{{ quesito.numeracao }} {{ quesito.enunciado }}</span>
     </div>
+
+    <!-- Modo de edição -->
+    <div *ngIf="estadoProntuario === 'editando'" class="quesito-header">
+      <div *ngIf="quesitoEditando; else displayMode">
+        <input type="text" [(ngModel)]="quesitoEditandoEnunciado" />
+        <button (click)="salvarEdicaoQuesito()">Salvar</button>
+        <button (click)="cancelarEdicao()">Cancelar</button>
+      </div>
+    </div>
+
+    <ng-template #displayMode class="quesito-header">
+      <span style="font-size: 20px;">{{ quesito.numeracao }} {{ quesito.enunciado }}</span>
+      <button (click)="editarQuesito()">Editar</button>
+    </ng-template>
 
     <!-- Campo de Resposta -->
     <div *ngIf="estadoProntuario === 'respondendo'" class="answer">
@@ -85,7 +99,15 @@
     <app-quesito *ngFor="let subquesito of quesito.subQuesitos; let i = index"
                   [quesito]="subquesito"
                   [estadoProntuario]="estadoProntuario"
-                  [quesitoIndex]="quesitoIndex + '.' + (i + 1)"></app-quesito>
+                  [quesitoIndex]="quesitoIndex + '.' + (i + 1)"
+                  (quesitoAtualizado)="quesitoAtualizadoPropagate()"
+                  (subQuesitoCriado)="subQuesitoCriadoPropagate()"></app-quesito>
+  </div>
+
+  <!-- Container para adicionar novo quesito-->
+  <div *ngIf="estadoProntuario === 'editando'" class="add-quesito-container">
+    <input type="text" placeholder="Título do novo quesito" [(ngModel)]="novoQuesitoEnunciado" class="new-quesito-input" />
+    <button (click)="adicionarSubQuesito()" class="add-quesito-button">Adicionar Quesito</button>
   </div>
 </div>
   

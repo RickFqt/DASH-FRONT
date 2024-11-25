@@ -2,7 +2,7 @@
 
     <!-- Cabeçalho da Seção/Subseção -->
     <!-- Modo de visualização/respondendo -->
-    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="section-header" (click)="toggleSection()">
+    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="section-header-hover" (click)="toggleSection()">
       <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2>
       <img
         class="toggle-button"
@@ -37,6 +37,8 @@
             [quesito]="castToQuesitoComplete(subItem)" 
             [quesitoIndex]="sectionIndex + '.' + (i + 1)" 
             [estadoProntuario]="estadoProntuario"
+            (subQuesitoCriado)="adicionarSubQuesitoPropagate()"
+            (quesitoAtualizado)="quesitoAtualizadoPropagate()"
             (respostaAtualizada)="respostaAtualizadaPropagate()"
             (criarResposta)="criarRespostaPropagate($event)">
           </app-quesito>
@@ -51,6 +53,8 @@
             (secaoAtualizada)="atualizarSecaoPropagate($event)"
             (subSecaoCriada)="adicionarSubSecaoPropagate($event)"
             (quesitoCriado)="adicionarQuesitoPropagate()"
+            (subQuesitoCriado)="adicionarSubQuesitoPropagate()"
+            (quesitoAtualizado)="quesitoAtualizadoPropagate()"
             (respostaAtualizada)="respostaAtualizadaPropagate()"
             (criarResposta)="criarRespostaPropagate($event)">
           </app-section>

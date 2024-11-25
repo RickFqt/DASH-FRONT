@@ -77,6 +77,22 @@ export class QuesitoCreate {
     }
 }
 
+export class QuesitoUpdate {
+    enunciado: string;
+    obrigatorio: boolean;
+    ordem: number;
+    nivel: number;
+    tipoResposta: string;
+
+    constructor(enunciado: string = '', obrigatorio: boolean = false, ordem: number = 0, nivel: number = 0, tipoResposta: string = 'DISSERTATIVA_CURTA') {
+        this.enunciado = enunciado;
+        this.obrigatorio = obrigatorio;
+        this.ordem = ordem;
+        this.nivel = nivel;
+        this.tipoResposta = tipoResposta;
+    }
+}
+
 export class QuesitoComplete implements ItemOutput {
     id: number;
     tipoDeItem: string;

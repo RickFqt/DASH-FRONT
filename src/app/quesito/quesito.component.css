@@ -8,9 +8,10 @@
   margin-bottom: 10px ;
 }
 
-.question-header {
-  font-weight: bold;
-  margin-bottom: 10px;
+.quesito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .answer {
