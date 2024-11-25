@@ -67,6 +67,16 @@ export class QuesitoData implements Quesito {
     }
 }
 
+export class QuesitoCreate {
+    enunciado: string;
+    tipoResposta: string;
+
+    constructor(enunciado: string = '') {
+        this.enunciado = enunciado;
+        this.tipoResposta = 'DISSERTATIVA_CURTA';
+    }
+}
+
 export class QuesitoComplete implements ItemOutput {
     id: number;
     tipoDeItem: string;

@@ -27,7 +27,9 @@
       <span>
         <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
         (click)="makeProntuarioFromTemplate()">
-        <img *ngIf="!prontuario.ehTemplate" src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
+        <img src="edit_icon.svg" alt="Editar prontuário" class="top-right-buttons edit-button"
+        (click)="changeProntuarioState('editando')">
+        <img *ngIf="!prontuario.ehTemplate" src="responder_icon.svg" alt="Responder prontuario" class="top-right-buttons answer-button"
         (click)="changeProntuarioState('respondendo')">
         <img src="eye_icon.svg" alt="Visualizar prontuario" class="top-right-buttons plus-button"
         (click)="changeProntuarioState('visualizacao')">
@@ -56,6 +58,7 @@
         [estadoProntuario]="estadoProntuario"
         (secaoAtualizada)="refreshProntuario()"
         (subSecaoCriada)="refreshProntuario()"
+        (quesitoCriado)="refreshProntuario()"
         (respostaAtualizada)="refreshProntuario()"
         (criarResposta)="salvarResposta($event)">
       </app-section>

@@ -7,7 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
 import { ItemOutput } from '../itemoutput';
-import { QuesitoComplete } from '../quesito';
+import { QuesitoComplete, QuesitoCreate } from '../quesito';
+import { QuesitoService } from '../quesito.service';
 
 @Component({
   selector: 'app-section',
@@ -34,6 +35,7 @@ export class SectionComponent {
   novoQuesitoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
   @Output() secaoAtualizada = new EventEmitter<{superSecaoId:number, secaoAtualizada:SecaoComplete}>();
   @Output() subSecaoCriada = new EventEmitter<{superSecaoId: number, subSecao: SecaoData}>();
+  @Output() quesitoCriado = new EventEmitter();
 
   // Método para iniciar a edição da seção
   editarSecao() {
@@ -103,6 +105,29 @@ export class SectionComponent {
 
   adicionarSubSecaoPropagate(event : {superSecaoId: number, subSecao: SecaoData}) {
     this.subSecaoCriada.emit(event);
+  }
+
+  async adicionarQuesito(): Promise<void> {
+    if (this.novoQuesitoTitulo.trim()) {
+      
+      const novoQuesito : QuesitoCreate = {
+        enunciado: this.novoQuesitoTitulo,
+        tipoResposta: 'DISSERTATIVA_CURTA',
+      };
+
+      // Adiciona a novo quesito ao prontuário
+      const novoQuesitoCriado = await firstValueFrom(this.secaoService.addQuesito(this.section.id, novoQuesito));
+
+      this.novoQuesitoTitulo = ''; // limpa o campo após a adição
+      // Atualiza o prontuário local
+      this.quesitoCriado.emit();
+    } else {
+      alert('Por favor, insira um título para o quesito.');
+    }
+  }
+
+  adicionarQuesitoPropagate() {
+    this.quesitoCriado.emit();
   }
 
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------

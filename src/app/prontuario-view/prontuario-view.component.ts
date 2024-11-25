@@ -339,7 +339,7 @@ export class ProntuarioViewComponent {
 
       // Adiciona a nova seção ao prontuário
       const novaSecaoCriada = await firstValueFrom(this.prontuarioService.addSecao(this.prontuario.id, novaSecao));
-      this.refreshProntuario(novaSecaoCriada.id);
+      this.refreshProntuario();
       // Atualiza o prontuário local
       // this.prontuario.secoesIds.push(novaSecaoCriada.id);
       // this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
