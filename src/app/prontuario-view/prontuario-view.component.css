@@ -114,6 +114,10 @@
 }
 
 .copy-button {
+  margin-right: 10px;
+}
+
+.pdf-button {
   margin-right: 42px;
 }
 
