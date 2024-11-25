@@ -13,7 +13,7 @@
     </div>
 
     <!-- Modo de edição -->
-    <div *ngIf="estadoProntuario === 'editando'" class="section-header">
+    <div *ngIf="estadoProntuario === 'editando'" class="section-header-edit">
       <!-- <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2> -->
       <div *ngIf="secaoEditando; else displayMode">
         <input type="text" [(ngModel)]="secaoEditandoTitulo" />
@@ -22,9 +22,14 @@
       </div>
     </div>
 
-    <ng-template #displayMode class="section-header">
+    <ng-template #displayMode class="section-header-edit">
       <h2 class="section-title">{{ section.numeracao }} {{ section.titulo }}</h2>
-      <button (click)="editarSecao()">Editar</button>
+      <button (click)="toggleAdicionarSubitemButtons()">+</button>
+      <div *ngIf="mostrarBotaoSubitem">
+        <button (click)="adicionarSubSecao()">Adicionar SubSecao</button>
+        <button (click)="adicionarQuesito()">Adicionar Quesito</button>
+        <button (click)="editarSecao()">Editar</button>
+      </div>
     </ng-template>
   
     <!-- Conteúdo da Seção/Subseção -->
@@ -59,15 +64,6 @@
             (criarResposta)="criarRespostaPropagate($event)">
           </app-section>
         </div>
-      </div>
-
-      <!-- Container para adicionar nova subseção ou quesito-->
-      <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
-        <input type="text" placeholder="Título da nova seção" [(ngModel)]="novaSecaoTitulo" class="new-section-input" />
-        <button (click)="adicionarSubSecao()" class="add-section-button">Adicionar Seção</button>
-
-        <input type="text" placeholder="Título do novo quesito" [(ngModel)]="novoQuesitoTitulo" class="new-quesito-input" />
-        <button (click)="adicionarQuesito()" class="add-quesito-button">Adicionar Quesito</button>
       </div>
 
     </div>

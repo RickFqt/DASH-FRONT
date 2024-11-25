@@ -7,7 +7,7 @@
     </div>
 
     <!-- Modo de edição -->
-    <div *ngIf="estadoProntuario === 'editando'" class="quesito-header">
+    <div *ngIf="estadoProntuario === 'editando'" class="quesito-header-edit">
       <div *ngIf="quesitoEditando; else displayMode">
         <input type="text" [(ngModel)]="quesitoEditandoEnunciado" />
         <button (click)="salvarEdicaoQuesito()">Salvar</button>
@@ -15,9 +15,13 @@
       </div>
     </div>
 
-    <ng-template #displayMode class="quesito-header">
+    <ng-template #displayMode class="quesito-header-edit">
       <span style="font-size: 20px;">{{ quesito.numeracao }} {{ quesito.enunciado }}</span>
-      <button (click)="editarQuesito()">Editar</button>
+      <button (click)="toggleAdicionarSubitemButtons()">+</button>
+      <div *ngIf="mostrarBotaoSubitem">
+        <button (click)="adicionarSubQuesito()">Adicionar SubQuesito</button>
+        <button (click)="editarQuesito()">Editar</button>
+      </div>
     </ng-template>
 
     <!-- Campo de Resposta -->
@@ -102,12 +106,6 @@
                   [quesitoIndex]="quesitoIndex + '.' + (i + 1)"
                   (quesitoAtualizado)="quesitoAtualizadoPropagate()"
                   (subQuesitoCriado)="subQuesitoCriadoPropagate()"></app-quesito>
-  </div>
-
-  <!-- Container para adicionar novo quesito-->
-  <div *ngIf="estadoProntuario === 'editando'" class="add-quesito-container">
-    <input type="text" placeholder="Título do novo quesito" [(ngModel)]="novoQuesitoEnunciado" class="new-quesito-input" />
-    <button (click)="adicionarSubQuesito()" class="add-quesito-button">Adicionar Quesito</button>
   </div>
 </div>
   

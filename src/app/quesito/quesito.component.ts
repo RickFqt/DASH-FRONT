@@ -172,6 +172,7 @@ export class QuesitoComponent implements OnInit, OnDestroy {
   }
 
   // -------------------- Funcoes e atributos para o estado de editando --------------------
+  mostrarBotaoSubitem: boolean = false; // Para mostrar o input de nova seção ou quesito
   quesitoEditando: boolean = false;  // ID do quesito em edição
   quesitoEditandoEnunciado: string = '';  // Título temporário
   novoQuesitoEnunciado: string = ''; // para armazenar o título da nova seção temporariamente
@@ -207,25 +208,25 @@ export class QuesitoComponent implements OnInit, OnDestroy {
   }
 
   async adicionarSubQuesito(): Promise<void> {
-    if (this.novoQuesitoEnunciado.trim()) {
-      
-      const novoQuesito : QuesitoCreate = {
-        enunciado: this.novoQuesitoEnunciado,
-        tipoResposta: 'DISSERTATIVA_CURTA',
-      };
+    
+    const novoQuesito : QuesitoCreate = {
+      enunciado: 'Novo SubQuesito',
+      tipoResposta: 'DISSERTATIVA_CURTA',
+    };
 
-      // Adiciona a novo quesito ao prontuário
-      const novoQuesitoCriado = await firstValueFrom(this.quesitoService.addSubQuesito(this.quesito.id, novoQuesito));
+    // Adiciona a novo quesito ao prontuário
+    const novoQuesitoCriado = await firstValueFrom(this.quesitoService.addSubQuesito(this.quesito.id, novoQuesito));
 
-      this.novoQuesitoEnunciado = ''; // limpa o campo após a adição
-      // Atualiza o prontuário local
-      this.subQuesitoCriado.emit();
-    } else {
-      alert('Por favor, insira um título para o quesito.');
-    }
+    this.novoQuesitoEnunciado = ''; // limpa o campo após a adição
+    // Atualiza o prontuário local
+    this.subQuesitoCriado.emit();
   }
 
   subQuesitoCriadoPropagate() {
     this.subQuesitoCriado.emit();
+  }
+
+  toggleAdicionarSubitemButtons() {
+    this.mostrarBotaoSubitem = !this.mostrarBotaoSubitem;
   }
 }
