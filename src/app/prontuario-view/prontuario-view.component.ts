@@ -47,6 +47,7 @@ export class ProntuarioViewComponent {
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
+  ehMensagemErro = false;
 
   ngOnInit() {
     this.changeProntuarioState('visualizacao');
@@ -116,6 +117,7 @@ export class ProntuarioViewComponent {
 
   fecharPopUp() {
     this.mostrarPopUp = false;
+    this.ehMensagemErro = false;
   }
 
   async makeProntuarioFromTemplate(): Promise<void> {
@@ -355,6 +357,27 @@ export class ProntuarioViewComponent {
 
   atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
     this.refreshProntuario();
+  }
+
+  finalizarEdicao() {
+
+    this.prontuarioService.finalizarProntuario(this.prontuario.id).subscribe({
+      next: () => {
+      this.refreshProntuario();
+      console.log('Prontuário finalizado!');
+      this.mensagemSucesso = 'Prontuário finalizado com sucesso!';
+      this.mostrarPopUp = true;
+      this.changeProntuarioState('visualizacao');
+      
+
+      },
+      error: (error) => {
+      console.error('Erro ao finalizar o prontuário: ', error.message);
+      this.mensagemSucesso = 'Erro ao finalizar o prontuário: ' + error.message;
+      this.ehMensagemErro = true;
+      this.mostrarPopUp = true;
+      }
+    });
   }
 
   // -------------------------------------------------------------------------------------

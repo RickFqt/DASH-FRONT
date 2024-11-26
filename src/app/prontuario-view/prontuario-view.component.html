@@ -16,7 +16,7 @@
 	<div class="main-content">
 
     <div *ngIf="mostrarPopUp" class="popup-overlay" (click)="fecharPopUp()">
-      <div class="popup-content" (click)="$event.stopPropagation()">
+      <div [ngClass]="{ 'popup-content': !ehMensagemErro, 'popup-content-error': ehMensagemErro }" (click)="$event.stopPropagation()">
         <span class="close" (click)="fecharPopUp()">&times;</span>
         <p>{{ mensagemSucesso }}</p>
       </div>
@@ -114,6 +114,11 @@
     <!-- Botão de salvar resposta-->
     <div *ngIf="estadoProntuario === 'respondendo'" class="save-button">
       <button (click)="salvarRespostasDissertativas()" class="save-btn save-btn-primary">Salvar Respostas</button>
+    </div>
+
+    <!-- Botão de finalizar prontuário-->
+    <div *ngIf="estadoProntuario === 'editando'" class="save-button">
+      <button (click)="finalizarEdicao()" class="save-btn save-btn-primary">Finalizar Edição</button>
     </div>
 
     <!-- Debug button -->

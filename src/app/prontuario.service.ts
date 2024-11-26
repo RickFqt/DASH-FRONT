@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Prontuario, ProntuarioComplete } from './prontuario';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { Secao, SecaoCreate } from './secao';
 import { Resposta, RespostaCreate } from './resposta';
 import { Diagnostico } from './diagnostico';
@@ -68,6 +68,15 @@ export class ProntuarioService {
 
   gerarDiagnostico(idProntuario: number): Observable<Diagnostico> {
     return this.http.get<Diagnostico>(`/api/prontuario/${idProntuario}/diagnostico`);
+  }
+
+  finalizarProntuario(idProntuario: number): Observable<Prontuario> {
+    return this.http.patch<Prontuario>(`/api/prontuario/${idProntuario}/finalizarProntuario`, null).pipe(
+      catchError((error) => {
+        const mensagemErro = error.error?.message || 'Erro ao finalizar prontuário';
+        return throwError(() => new Error(mensagemErro));
+      })
+    );
   }
 
 
