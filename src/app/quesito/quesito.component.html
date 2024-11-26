@@ -21,6 +21,12 @@
       <div *ngIf="mostrarBotaoSubitem">
         <button (click)="adicionarSubQuesito()">Adicionar SubQuesito</button>
         <button (click)="editarQuesito()">Editar</button>
+        <select [(ngModel)]="tipoRespostaAtual" (change)="atualizarTipoResposta()">
+          <option value="DISSERTATIVA_CURTA">Dissertativa Curta</option>
+          <option value="DISSERTATIVA_LONGA">Dissertativa Longa</option>
+          <option value="OBJETIVA_SIMPLES">Objetiva Simples</option>
+          <option value="OBJETIVA_MULTIPLA">Objetiva Múltipla</option>
+        </select>
       </div>
     </ng-template>
 
@@ -69,6 +75,7 @@
       </div>
     </div>
 
+    <!-- Estado de visualizacao -->
     <div *ngIf="estadoProntuario === 'visualizacao'" class="answer">
       <!-- Resposta dissertativa curta -->
       <div *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'" class="resposta dissertativa-curta">
@@ -96,6 +103,48 @@
         </span>
       </div>
     </div>
+
+    <!-- Estado de editando -->
+    <div *ngIf="estadoProntuario === 'editando'" class="answer">
+      <!-- Resposta dissertativa curta -->
+      <div *ngIf="quesito.tipoResposta === 'DISSERTATIVA_CURTA'" class="resposta dissertativa-curta">
+        {{ resposta.conteudo[0] || '' }}
+      </div>
+
+      <!-- Resposta dissertativa longa -->
+      <div *ngIf="quesito.tipoResposta === 'DISSERTATIVA_LONGA'" class="resposta dissertativa-longa">
+        {{ resposta.conteudo[0] || '' }}
+      </div>
+
+      <div *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES' || quesito.tipoResposta === 'OBJETIVA_MULTIPLA'">
+        <span *ngFor="let opcao of quesito.opcoes; let i = index">
+
+          <span *ngIf="opcaoEditando[opcao.id]; else displayModeOpcao">
+            <input type="text" [(ngModel)]="opcaoEditandoTextoAlternativa" />
+            <button (click)="salvarEdicaoOpcao(opcao)">Salvar</button>
+            <button (click)="cancelarEdicaoOpcao(opcao)">Cancelar</button>
+          </span>
+
+          <ng-template #displayModeOpcao>
+            <span *ngIf="quesito.tipoResposta === 'OBJETIVA_SIMPLES'">
+              <input type="radio" [checked]="resposta.opcoesMarcadasIds.includes(opcao.id)" disabled>
+            </span>
+  
+            <span *ngIf="quesito.tipoResposta === 'OBJETIVA_MULTIPLA'">
+              <input type="checkbox" [checked]="resposta.opcoesMarcadasIds.includes(opcao.id)" disabled>
+            </span>
+            {{ opcao.textoAlternativa }}
+            <button (click)="toggleMostrarOpcaoButtons(opcao.id)">+</button>
+            <span *ngIf="mostrarOpcaoButtons[opcao.id]">
+              <button (click)="editarOpcao(opcao)">Editar</button>
+              <button (click)="removerOpcao(opcao)">Remover</button>
+            </span>
+          </ng-template>
+        </span>
+        <button (click)="adicionarOpcao()">Adicionar Opção</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Subquesitos (recursivo) -->
