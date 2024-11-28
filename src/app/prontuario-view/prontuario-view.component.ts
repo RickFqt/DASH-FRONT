@@ -193,6 +193,7 @@ export class ProntuarioViewComponent {
   generatePDF() {
     this.prontuarioService.getByIdComplete(this.prontuario.id, false).subscribe({
       next: (prontuario) => {
+        console.log(prontuario)
         // Cria uma nova instância de jsPDF
         const doc = new jsPDF('p', 'mm', 'a4');
   
@@ -293,10 +294,13 @@ export class ProntuarioViewComponent {
             doc.addPage();
             yPosition = 20;
           }
-          
+
           // Se a seção tiver subseções, chama a função recursivamente
-          if (item.subItens && item.subItens.length > 0) {
+          if (item.tipoDeItem == "secao" && item.subItens && item.subItens.length > 0) {
             item.subItens.forEach((subItem: any) => printSubItem(subItem, depth + 1));
+          }
+          if (item.tipoDeItem == "quesito" && item.subQuesitos && item.subQuesitos.length > 0) {
+            item.subQuesitos.forEach((subItem: any) => printSubItem(subItem, depth + 1));
           }
         };
         prontuario.secoes.forEach((secao, index) => {
