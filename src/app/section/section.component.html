@@ -2,7 +2,7 @@
 
     <!-- Cabeçalho da Seção/Subseção -->
     <!-- Modo de visualização/respondendo -->
-    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="section-header" (click)="toggleSection()">
+    <div *ngIf="estadoProntuario === 'visualizacao' || estadoProntuario === 'respondendo'" class="section-header-hover" (click)="toggleSection()">
       <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2>
       <img
         class="toggle-button"
@@ -13,7 +13,7 @@
     </div>
 
     <!-- Modo de edição -->
-    <div *ngIf="estadoProntuario === 'editando'" class="section-header">
+    <div *ngIf="estadoProntuario === 'editando'" class="section-header-edit">
       <!-- <h2 class="section-title">{{ sectionIndex }}. {{ section.titulo }}</h2> -->
       <div *ngIf="secaoEditando; else displayMode">
         <input type="text" [(ngModel)]="secaoEditandoTitulo" />
@@ -22,9 +22,14 @@
       </div>
     </div>
 
-    <ng-template #displayMode class="section-header">
-      <h2 class="section-title">{{ section.numeracao }}</h2>
-      <button (click)="editarSecao()">Editar</button>
+    <ng-template #displayMode class="section-header-edit">
+      <h2 class="section-title">{{ section.numeracao }} {{ section.titulo }}</h2>
+      <button (click)="toggleAdicionarSubitemButtons()">+</button>
+      <div *ngIf="mostrarBotaoSubitem">
+        <button (click)="adicionarSubSecao()">Adicionar SubSecao</button>
+        <button (click)="adicionarQuesito()">Adicionar Quesito</button>
+        <button (click)="editarSecao()">Editar</button>
+      </div>
     </ng-template>
   
     <!-- Conteúdo da Seção/Subseção -->
@@ -37,6 +42,8 @@
             [quesito]="castToQuesitoComplete(subItem)" 
             [quesitoIndex]="sectionIndex + '.' + (i + 1)" 
             [estadoProntuario]="estadoProntuario"
+            (subQuesitoCriado)="adicionarSubQuesitoPropagate()"
+            (quesitoAtualizado)="quesitoAtualizadoPropagate()"
             (respostaAtualizada)="respostaAtualizadaPropagate()"
             (criarResposta)="criarRespostaPropagate($event)">
           </app-quesito>
@@ -50,17 +57,13 @@
             [estadoProntuario]="estadoProntuario"
             (secaoAtualizada)="atualizarSecaoPropagate($event)"
             (subSecaoCriada)="adicionarSubSecaoPropagate($event)"
+            (quesitoCriado)="adicionarQuesitoPropagate()"
+            (subQuesitoCriado)="adicionarSubQuesitoPropagate()"
+            (quesitoAtualizado)="quesitoAtualizadoPropagate()"
             (respostaAtualizada)="respostaAtualizadaPropagate()"
             (criarResposta)="criarRespostaPropagate($event)">
           </app-section>
         </div>
-      </div>
-
-      <!-- TODO: Checar se isso ainda funciona -->
-      <!-- Container para adicionar novas seções -->
-      <div *ngIf="estadoProntuario === 'editando'" class="add-section-container">
-        <input type="text" placeholder="Título da nova seção" [(ngModel)]="novaSecaoTitulo" class="new-section-input" />
-        <button (click)="adicionarSubSecao()" class="add-section-button">Adicionar Seção</button>
       </div>
 
     </div>

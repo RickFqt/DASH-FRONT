@@ -7,7 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RespostaCreate } from '../resposta';
 import { ItemOutput } from '../itemoutput';
-import { QuesitoComplete } from '../quesito';
+import { QuesitoComplete, QuesitoCreate } from '../quesito';
+import { QuesitoService } from '../quesito.service';
 
 @Component({
   selector: 'app-section',
@@ -28,12 +29,16 @@ export class SectionComponent {
   }
 
   // -------------------- Funcoes e atributos para o estado de edicao --------------------
+  mostrarBotaoSubitem: boolean = false; // Para mostrar o input de nova seção ou quesito
   secaoEditando: boolean = false;  // ID da seção em edição
   secaoEditandoTitulo: string = '';  // Título temporário
   novaSecaoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
   novoQuesitoTitulo: string = ''; // para armazenar o título da nova seção temporariamente
   @Output() secaoAtualizada = new EventEmitter<{superSecaoId:number, secaoAtualizada:SecaoComplete}>();
   @Output() subSecaoCriada = new EventEmitter<{superSecaoId: number, subSecao: SecaoData}>();
+  @Output() quesitoCriado = new EventEmitter();
+  @Output() subQuesitoCriado = new EventEmitter();
+  @Output() quesitoAtualizado = new EventEmitter();
 
   // Método para iniciar a edição da seção
   editarSecao() {
@@ -67,34 +72,30 @@ export class SectionComponent {
   }
 
   async adicionarSubSecao(): Promise<void> {
-    if (this.novaSecaoTitulo.trim()) {
-      
-      const novaSecao : SecaoCreate = {
-        titulo: this.novaSecaoTitulo
-      };
+     
+    const novaSecao : SecaoCreate = {
+      titulo: 'Nova Subseção',
+    };
 
-      // Adiciona a nova seção ao prontuário
-      const novaSecaoCriada = await firstValueFrom(this.secaoService.addSubSecao(this.section.id, novaSecao));
+    // Adiciona a nova seção ao prontuário
+    const novaSecaoCriada = await firstValueFrom(this.secaoService.addSubSecao(this.section.id, novaSecao));
 
-      const novaSecaoData : SecaoData = {
-        id: novaSecaoCriada.id,
-        titulo: novaSecaoCriada.titulo,
-        ordem: novaSecaoCriada.ordem,
-        nivel: novaSecaoCriada.nivel,
-        subSecoesIds: novaSecaoCriada.subSecoesIds,
-        superSecaoId: novaSecaoCriada.superSecaoId,
-        prontuarioId: novaSecaoCriada.prontuarioId,
-        quesitosIds: novaSecaoCriada.quesitosIds,
-        quesitos: [],
-        subSecoes: []
-      };
+    const novaSecaoData : SecaoData = {
+      id: novaSecaoCriada.id,
+      titulo: novaSecaoCriada.titulo,
+      ordem: novaSecaoCriada.ordem,
+      nivel: novaSecaoCriada.nivel,
+      subSecoesIds: novaSecaoCriada.subSecoesIds,
+      superSecaoId: novaSecaoCriada.superSecaoId,
+      prontuarioId: novaSecaoCriada.prontuarioId,
+      quesitosIds: novaSecaoCriada.quesitosIds,
+      quesitos: [],
+      subSecoes: []
+    };
 
-      this.novaSecaoTitulo = ''; // limpa o campo após a adição
-      // Atualiza o prontuário local
-      this.subSecaoCriada.emit({superSecaoId: this.section.id, subSecao: novaSecaoData});
-    } else {
-      alert('Por favor, insira um título para a seção.');
-    }
+    this.novaSecaoTitulo = ''; // limpa o campo após a adição
+    // Atualiza o prontuário local
+    this.subSecaoCriada.emit({superSecaoId: this.section.id, subSecao: novaSecaoData});
   }
 
   atualizarSecaoPropagate(event : {superSecaoId: number, secaoAtualizada: SecaoComplete}) {
@@ -103,6 +104,38 @@ export class SectionComponent {
 
   adicionarSubSecaoPropagate(event : {superSecaoId: number, subSecao: SecaoData}) {
     this.subSecaoCriada.emit(event);
+  }
+
+  async adicionarQuesito(): Promise<void> {
+    
+    const novoQuesito : QuesitoCreate = {
+      enunciado: 'Novo Quesito',
+      tipoResposta: 'DISSERTATIVA_CURTA',
+    };
+
+    // Adiciona a novo quesito ao prontuário
+    const novoQuesitoCriado = await firstValueFrom(this.secaoService.addQuesito(this.section.id, novoQuesito));
+
+    this.novoQuesitoTitulo = ''; // limpa o campo após a adição
+    // Atualiza o prontuário local
+    this.quesitoCriado.emit();
+    
+  }
+
+  adicionarQuesitoPropagate() {
+    this.quesitoCriado.emit();
+  }
+
+  adicionarSubQuesitoPropagate() {
+    this.subQuesitoCriado.emit();
+  }
+
+  quesitoAtualizadoPropagate() {
+    this.quesitoAtualizado.emit();
+  }
+
+  toggleAdicionarSubitemButtons() {
+    this.mostrarBotaoSubitem = !this.mostrarBotaoSubitem;
   }
 
   // -------------------- Funcoes e atributos para o estado de respondendo --------------------

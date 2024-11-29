@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Quesito } from './quesito';
+import { Quesito, QuesitoCreate, QuesitoUpdate } from './quesito';
 import { Observable } from 'rxjs';
+import { Opcao, OpcaoCreate } from './opcao';
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +23,17 @@ export class QuesitoService {
 
   estaHabilitado(quesitoId: number): Observable<boolean> {
     return this.http.get<boolean>(`/api/quesito/${quesitoId}/estaHabilitado`);
+  }
+
+  update(id:number, quesito: QuesitoUpdate): Observable<Quesito> {
+    return this.http.put<Quesito>(`/api/quesito/${id}`, quesito);
+  }
+
+  addSubQuesito(id:number, quesito: QuesitoCreate): Observable<Quesito> {
+    return this.http.post<Quesito>(`/api/quesito/${id}/addSubQuesito`, quesito);
+  }
+
+  addOpcao(id:number, opcao: OpcaoCreate): Observable<Opcao> {
+    return this.http.post<Opcao>(`/api/quesito/${id}/addOpcao`, opcao);
   }
 }

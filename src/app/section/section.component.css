@@ -17,6 +17,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .section-header-edit {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .section-header-hover {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
   }
   

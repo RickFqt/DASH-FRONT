@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Secao, SecaoCreate, SecaoUpdate } from './secao';
 import { Observable } from 'rxjs';
+import { QuesitoCreate } from './quesito';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,9 @@ export class SecaoService {
 
   addSubSecao(id:number, secao: SecaoCreate): Observable<Secao> {
     return this.http.post<Secao>(`/api/secao/${id}/addSubSecao`, secao);
+  }
+
+  addQuesito(id:number, quesito: QuesitoCreate): Observable<Secao> {
+    return this.http.post<Secao>(`/api/secao/${id}/addQuesito`, quesito);
   }
 }

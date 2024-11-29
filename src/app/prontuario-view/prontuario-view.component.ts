@@ -47,6 +47,7 @@ export class ProntuarioViewComponent {
 
   mensagemSucesso: string | null = null;
   mostrarPopUp: boolean = false;
+  ehMensagemErro = false;
 
   ngOnInit() {
     this.changeProntuarioState('visualizacao');
@@ -116,6 +117,7 @@ export class ProntuarioViewComponent {
 
   fecharPopUp() {
     this.mostrarPopUp = false;
+    this.ehMensagemErro = false;
   }
 
   async makeProntuarioFromTemplate(): Promise<void> {
@@ -191,6 +193,7 @@ export class ProntuarioViewComponent {
   generatePDF() {
     this.prontuarioService.getByIdComplete(this.prontuario.id, false).subscribe({
       next: (prontuario) => {
+        console.log(prontuario)
         // Cria uma nova instância de jsPDF
         const doc = new jsPDF('p', 'mm', 'a4');
   
@@ -291,10 +294,13 @@ export class ProntuarioViewComponent {
             doc.addPage();
             yPosition = 20;
           }
-          
+
           // Se a seção tiver subseções, chama a função recursivamente
-          if (item.subItens && item.subItens.length > 0) {
+          if (item.tipoDeItem == "secao" && item.subItens && item.subItens.length > 0) {
             item.subItens.forEach((subItem: any) => printSubItem(subItem, depth + 1));
+          }
+          if (item.tipoDeItem == "quesito" && item.subQuesitos && item.subQuesitos.length > 0) {
+            item.subQuesitos.forEach((subItem: any) => printSubItem(subItem, depth + 1));
           }
         };
         prontuario.secoes.forEach((secao, index) => {
@@ -339,7 +345,7 @@ export class ProntuarioViewComponent {
 
       // Adiciona a nova seção ao prontuário
       const novaSecaoCriada = await firstValueFrom(this.prontuarioService.addSecao(this.prontuario.id, novaSecao));
-      this.refreshProntuario(novaSecaoCriada.id);
+      this.refreshProntuario();
       // Atualiza o prontuário local
       // this.prontuario.secoesIds.push(novaSecaoCriada.id);
       // this.prontuario.secoes.push(await this.mapSecaoById(novaSecaoCriada.id));
@@ -355,6 +361,27 @@ export class ProntuarioViewComponent {
 
   atualizarSecao(event : {superSecaoId: number, secaoAtualizada: SecaoData}) {
     this.refreshProntuario();
+  }
+
+  finalizarEdicao() {
+
+    this.prontuarioService.finalizarProntuario(this.prontuario.id).subscribe({
+      next: () => {
+      this.refreshProntuario();
+      console.log('Prontuário finalizado!');
+      this.mensagemSucesso = 'Prontuário finalizado com sucesso!';
+      this.mostrarPopUp = true;
+      this.changeProntuarioState('visualizacao');
+      
+
+      },
+      error: (error) => {
+      console.error('Erro ao finalizar o prontuário: ', error.message);
+      this.mensagemSucesso = 'Erro ao finalizar o prontuário: ' + error.message;
+      this.ehMensagemErro = true;
+      this.mostrarPopUp = true;
+      }
+    });
   }
 
   // -------------------------------------------------------------------------------------
