@@ -16,7 +16,7 @@
 	<div class="main-content">
 
     <div *ngIf="mostrarPopUp" class="popup-overlay" (click)="fecharPopUp()">
-      <div class="popup-content" (click)="$event.stopPropagation()">
+      <div [ngClass]="{ 'popup-content': !ehMensagemErro, 'popup-content-error': ehMensagemErro }" (click)="$event.stopPropagation()">
         <span class="close" (click)="fecharPopUp()">&times;</span>
         <p>{{ mensagemSucesso }}</p>
       </div>
@@ -27,12 +27,17 @@
       <span>
         <img *ngIf="prontuario.ehTemplate" src="plus_sign.svg" alt="Criar prontuario a partir de template" class="top-right-buttons plus-button"
         (click)="makeProntuarioFromTemplate()">
-        <img *ngIf="!prontuario.ehTemplate" src="edit_icon.svg" alt="Responder prontuario" class="top-right-buttons edit-button"
+        <img src="edit_icon.svg" alt="Editar prontuário" class="top-right-buttons edit-button"
+        (click)="changeProntuarioState('editando')">
+        <img *ngIf="!prontuario.ehTemplate" src="responder_icon.svg" alt="Responder prontuario" class="top-right-buttons answer-button"
         (click)="changeProntuarioState('respondendo')">
         <img src="eye_icon.svg" alt="Visualizar prontuario" class="top-right-buttons plus-button"
         (click)="changeProntuarioState('visualizacao')">
         <img src="copy_icon.svg" alt="Duplicar prontuario" class="top-right-buttons copy-button"
         (click)="makeProntuarioCopy()">
+        <img src="pdf_icon.svg" alt="Exportar para PDF" class="top-right-buttons pdf-button"
+        (click)="generatePDF()">
+        <!-- <button (click)="generatePDF()">Exportar para PDF</button> -->
       </span>
       <!-- <button class="top-right-button">Clique aqui</button> -->
     </div>
@@ -53,6 +58,9 @@
         [estadoProntuario]="estadoProntuario"
         (secaoAtualizada)="refreshProntuario()"
         (subSecaoCriada)="refreshProntuario()"
+        (quesitoCriado)="refreshProntuario()"
+        (subQuesitoCriado)="refreshProntuario()"
+        (quesitoAtualizado)="refreshProntuario()"
         (respostaAtualizada)="refreshProntuario()"
         (criarResposta)="salvarResposta($event)">
       </app-section>
@@ -106,6 +114,11 @@
     <!-- Botão de salvar resposta-->
     <div *ngIf="estadoProntuario === 'respondendo'" class="save-button">
       <button (click)="salvarRespostasDissertativas()" class="save-btn save-btn-primary">Salvar Respostas</button>
+    </div>
+
+    <!-- Botão de finalizar prontuário-->
+    <div *ngIf="estadoProntuario === 'editando'" class="save-button">
+      <button (click)="finalizarEdicao()" class="save-btn save-btn-primary">Finalizar Edição</button>
     </div>
 
     <!-- Debug button -->

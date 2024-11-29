@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Opcao } from './opcao';
+import { Opcao, OpcaoUpdate } from './opcao';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -18,5 +18,13 @@ export class OpcaoService {
 
   getById(id: number): Observable<Opcao> {
     return this.http.get<Opcao>(`/api/opcao/${id}`);
+  }
+
+  delete(id: number): Observable<Opcao> {
+    return this.http.delete<Opcao>(`/api/opcao/${id}`);
+  }
+
+  update(id:number, opcao: OpcaoUpdate): Observable<Opcao> {
+    return this.http.put<Opcao>(`/api/opcao/${id}`, opcao);
   }
 }

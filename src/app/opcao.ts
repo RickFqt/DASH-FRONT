@@ -3,7 +3,6 @@ export interface Opcao {
     textoAlternativa: string;
     ordem: number;
     quesitoId: number;
-    quesitosHabilitadosIds: number[];
 }
 
 export class OpcaoComplete {
@@ -11,7 +10,6 @@ export class OpcaoComplete {
     textoAlternativa: string;
     ordem: number;
     quesitoId: number;
-    quesitosHabilitadosIds: number[];
 
     constructor(
         id: number = 0,
@@ -24,6 +22,25 @@ export class OpcaoComplete {
         this.textoAlternativa = textoAlternativa;
         this.ordem = ordem;
         this.quesitoId = quesitoId;
-        this.quesitosHabilitadosIds = quesitosHabilitadosIds;
+    }
+}
+
+export class OpcaoCreate {
+    textoAlternativa: string;
+    ordem: number;
+
+    constructor(textoAlternativa: string = '', ordem : number = 0) {
+        this.textoAlternativa = textoAlternativa;
+        this.ordem = 0;
+    }
+}
+
+export class OpcaoUpdate {
+    textoAlternativa: string;
+    ordem: number;
+
+    constructor(textoAlternativa: string = '', ordem : number = 0) {
+        this.textoAlternativa = textoAlternativa;
+        this.ordem = 0;
     }
 }

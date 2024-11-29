@@ -4,11 +4,12 @@ import { Resposta, RespostaCreate } from '../resposta';
 import { RespostaService } from '../resposta.service';
 import { debounceTime, firstValueFrom, Observable, Subject, switchMap } from 'rxjs';
 import { QuesitoService } from '../quesito.service';
-import { Opcao } from '../opcao';
-import { QuesitoComplete, QuesitoData } from '../quesito';
+import { Opcao, OpcaoComplete, OpcaoCreate } from '../opcao';
+import { QuesitoComplete, QuesitoCreate, QuesitoData } from '../quesito';
 import { FormsModule } from '@angular/forms';
 import { ProntuarioService } from '../prontuario.service';
 import { ActivatedRoute } from '@angular/router';
+import { OpcaoService } from '../opcao.service';
 
 @Component({
   selector: 'app-quesito',
@@ -23,6 +24,7 @@ export class QuesitoComponent implements OnInit, OnDestroy {
   @Input() quesitoIndex: string = '';
   @Input() estadoProntuario: string = '';
   quesitoService : QuesitoService = inject(QuesitoService);
+  opcaoService : OpcaoService = inject(OpcaoService);
   respostaService : RespostaService = inject(RespostaService);
   prontuarioService : ProntuarioService = inject(ProntuarioService);
   selectedOpcoesIds: number[] = [];
@@ -47,8 +49,10 @@ export class QuesitoComponent implements OnInit, OnDestroy {
             this.selectedConteudo = resposta.conteudo;
           });
       }
-    }
 
+    }
+    
+    this.tipoRespostaAtual = this.quesito.tipoResposta;
     this.isQuesitoHabilitado(this.quesito.id);
 
     // TODO: Conseguir o id do prontuário por outro metodo
@@ -171,4 +175,130 @@ export class QuesitoComponent implements OnInit, OnDestroy {
     }
   }
 
+  // -------------------- Funcoes e atributos para o estado de editando --------------------
+  mostrarBotaoSubitem: boolean = false; // Para mostrar o input de nova seção ou quesito
+  mostrarOpcaoButtons: { [key: number]: boolean } = {}; // Para mostrar os botões de adicionar opções
+  opcaoEditando: { [key: number]: boolean } = {}; // Para mostrar o input de edição de opção
+  quesitoEditando: boolean = false;  // ID do quesito em edição
+  quesitoEditandoEnunciado: string = '';  // Título temporário
+  novoQuesitoEnunciado: string = ''; // para armazenar o título da nova seção temporariamente
+  opcaoEditandoTextoAlternativa: string = ''; // Para armazenar o texto da opção temporariamente
+  tipoRespostaAtual: string = 'DISSERTATIVA_CURTA'; // para armazenar o tipo de resposta temporariamente
+  @Output() quesitoAtualizado = new EventEmitter();
+  @Output() subQuesitoCriado = new EventEmitter();
+
+  // Método para iniciar a edição da seção
+  editarQuesito() {
+    this.quesitoEditando = true;
+    this.quesitoEditandoEnunciado = this.quesito.enunciado;
+  }
+
+  // Método para salvar a edição
+  async salvarEdicaoQuesito() {
+    const quesitoNovo = { ...this.quesito, enunciado: this.quesitoEditandoEnunciado };
+
+    // Atualiza o quesito no backend
+    await firstValueFrom(this.quesitoService.update(this.quesito.id, quesitoNovo));
+
+    this.quesitoAtualizado.emit();
+    this.quesitoEditando = false;
+
+  }
+
+  quesitoAtualizadoPropagate() {
+    this.quesitoAtualizado.emit();
+  }
+
+  // Método para cancelar a edição
+  cancelarEdicao() {
+    this.quesitoEditando = false;
+    this.quesitoEditandoEnunciado = '';
+  }
+
+  async adicionarSubQuesito(): Promise<void> {
+    
+    const novoQuesito : QuesitoCreate = {
+      enunciado: 'Novo SubQuesito',
+      tipoResposta: 'DISSERTATIVA_CURTA',
+    };
+
+    // Adiciona a novo quesito ao prontuário
+    const novoQuesitoCriado = await firstValueFrom(this.quesitoService.addSubQuesito(this.quesito.id, novoQuesito));
+
+    this.novoQuesitoEnunciado = ''; // limpa o campo após a adição
+    // Atualiza o prontuário local
+    this.subQuesitoCriado.emit();
+  }
+
+  subQuesitoCriadoPropagate() {
+    this.subQuesitoCriado.emit();
+  }
+
+  toggleAdicionarSubitemButtons() {
+    this.mostrarBotaoSubitem = !this.mostrarBotaoSubitem;
+  }
+
+  atualizarTipoResposta() {
+    const quesitoNovo = { ...this.quesito, tipoResposta: this.tipoRespostaAtual };
+    
+    this.quesitoService.update(this.quesito.id, quesitoNovo).subscribe(
+      (quesito) => {
+        this.quesitoAtualizado.emit();
+      }
+    );
+  }
+
+  adicionarOpcao() {
+    // this.quesito.opcoes.push({ textoAlternativa: '', ordem: 0, id:0, quesitoId: this.quesito.id });
+    const opcaoNova : OpcaoCreate = {
+      textoAlternativa: 'Nova Opção',
+      ordem: 0
+    };
+
+    this.quesitoService.addOpcao(this.quesito.id, opcaoNova).subscribe(
+      (opcao) => {
+        this.quesito.opcoes.push(opcao);
+        this.quesitoAtualizado.emit();
+      }
+    );
+
+  }
+  
+  removerOpcao(opcao : OpcaoComplete) {
+    
+    this.opcaoService.delete(opcao.id).subscribe(
+      () => {
+        this.quesito.opcoes = this.quesito.opcoes.filter(opcaoAtual => opcaoAtual.id !== opcao.id);
+        this.quesitoAtualizado.emit();
+      }
+    );
+  }
+  
+  salvarOpcao(opcao : OpcaoComplete) {
+    
+    this.opcaoService.update(opcao.id, opcao).subscribe(
+      () => {
+        this.quesitoAtualizado.emit();
+      }
+    );
+  }
+
+  editarOpcao(opcao : OpcaoComplete) {
+    this.opcaoEditando[opcao.id] = true;
+    this.opcaoEditandoTextoAlternativa = opcao.textoAlternativa;
+  }
+
+  salvarEdicaoOpcao(opcao : OpcaoComplete) {
+    opcao.textoAlternativa = this.opcaoEditandoTextoAlternativa;
+    this.opcaoEditando[opcao.id] = false;
+    this.salvarOpcao(opcao);
+  }
+
+  cancelarEdicaoOpcao(opcao : OpcaoComplete) {
+    this.opcaoEditando[opcao.id] = false;
+  }
+
+  toggleMostrarOpcaoButtons(opcaoId : number) {
+    this.mostrarOpcaoButtons[opcaoId] = !this.mostrarOpcaoButtons[opcaoId];
+  }
 }
